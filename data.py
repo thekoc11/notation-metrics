@@ -170,3 +170,11 @@ MOZART_THEME["beat_onset"] = [1, 0,
                               1, 0,
                               1, 0, 0, 0, 0, 0,
                               1]
+
+MOZART_VARIATION1 = MOZART_THEME
+
+MOZART_VARIATION1["melody"] = [2, 0, -1, 0, -1, 0, -1, 0,
+                               9, 8, 5, 7, 5, 7, 5, 7,
+                               8, 9, 12, 11, 14, 12, 11, 9,
+                               9, 7, 16, 14, 12, 11, 9, 7,
+                               ]
