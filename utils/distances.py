@@ -19,7 +19,7 @@ def LCSubSeq(X, Y, m, n):
                 LCSuff[i][j] = 0
     return result
 
-def editDist(X, Y, m, n):
+def editDist(X, Y, m, n, normalize_len=False):
     """
     Returns the edit distance between array-likes X and Y
     :param X: array-like
@@ -28,6 +28,23 @@ def editDist(X, Y, m, n):
     :param n: length of Y
     :return: (int) minimum number of edits required to make X = Y
     """
+    if normalize_len:
+        if m < n:
+            quot = n // m
+            new_X = []
+            for i in range(quot):
+                new_X += X
+            X = new_X
+            print("Normalized length for X: {}".format(len(X)))
+        else:
+            quot = m // n
+            new_Y = []
+            for i in range(quot):
+                new_Y += Y
+            Y = new_Y
+            print("Normalized length for Y: {}".format(len(Y)))
+
+
     dp = [[0 for x in range(n+1)] for x in range(m+1)]
     for i in range(m+1):
         for j in range(n+1):
@@ -43,13 +60,29 @@ def editDist(X, Y, m, n):
 
     return dp[m][n]
 
-def etcDist(seq_x, seq_y):
+def etcDist(seq_x, seq_y, normalize_len=False):
     """
     Returns the ETC distance between the two sequences
     :param seq_x: array-like
     :param seq_y: array-like
     :return: (int) ETC distance between the sequences
     """
+    if normalize_len:
+        m = len(seq_x)
+        n = len(seq_y)
+        if m < n:
+            quot = n // m
+            new_X = []
+            for i in range(quot):
+                new_X += list(seq_x)
+            X = new_X
+        else:
+            quot = m // n
+            new_Y = []
+            for i in range(quot):
+                new_Y += list(seq_y)
+            Y = new_Y
+
     # Compute ETC of individual sequences
     seq_x_ETC = ETC.compute_1D(seq_x, order=2, verbose=False, truncate=True)["ETC1D"]
     seq_y_ETC = ETC.compute_1D(seq_y, order=2, verbose=False, truncate=True)["ETC1D"]

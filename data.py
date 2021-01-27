@@ -1,3 +1,5 @@
+from varname import nameof
+
 AH_VOUS_ORIGINAL = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
 SYAMALE_MEENAKSHI = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
@@ -95,7 +97,7 @@ SYAMALE_MEENAKSHI["durations"] = [0.375, 0.125, 0.25, 0.25,
                                   0.5, 0.25, 0.125, 0.125,
                                   0.5, 0.25, 0.125, 0.125]
 
-MOZART_THEME = AH_VOUS_ORIGINAL
+MOZART_THEME = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
 MOZART_THEME["melody"] = [0, 0,
                           7, 7,
@@ -171,7 +173,7 @@ MOZART_THEME["beat_onset"] = [1, 0,
                               1, 0, 0, 0, 0, 0,
                               1]
 
-MOZART_VARIATION1 = MOZART_THEME
+MOZART_VARIATION1 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
 MOZART_VARIATION1["melody"] = [2, 0, -1, 0, -1, 0, -1, 0,
                                9, 8, 5, 7, 5, 7, 5, 7,
@@ -199,7 +201,7 @@ MOZART_VARIATION1["beat_onset"] = [1, 0, 0, 0, 0, 0, 0, 0,
                                    1, 0]
 MOZART_VARIATION1['rests'] = [0 if i != 99999 else 1 for i in MOZART_VARIATION1["melody"]]
 
-MOZART_VARIATION2 = MOZART_VARIATION1
+MOZART_VARIATION2 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
 MOZART_VARIATION2["melody"] = [0, 0,
                                7, 7,
@@ -208,7 +210,7 @@ MOZART_VARIATION2["melody"] = [0, 0,
                                0, 2,
                                2, -3] # TODO: Variation 2 incomplete
 
-MOZART_VARIATION3 = MOZART_VARIATION1
+MOZART_VARIATION3 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 MOZART_VARIATION3["melody"] = [-12, -8, -5, 0, 4, 7,
                                12, 7, 5, 4, 2, 0,
                                10, 7, 9, 12, 11, 9,
@@ -235,7 +237,7 @@ MOZART_VARIATION3["beat_onset"] = [1, 0, 0, 0, 0, 0,
                                    1, 0, 0, 0, 0, 0,
                                    1, 0]
 
-MOZART_VARIATION4 = MOZART_VARIATION3
+MOZART_VARIATION4 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 #### TODO: Variation 4 incomplete
 
 MOZART_VARIATION5 = MOZART_VARIATION4
@@ -257,11 +259,11 @@ MOZART_VARIATION5["durations"] = [0.25, 0.125, 0.125,
                                   0.125, 0.125, 0.125, 0.125,
                                   0.25, 0.25]
 
-MOZART_VARIATION6 = MOZART_VARIATION5
+MOZART_VARIATION6 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 #### TODO: VARIATION 6 incomplete
 
 
-MOZART_VARIATION7 = MOZART_VARIATION6
+MOZART_VARIATION7 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 MOZART_VARIATION7["melody"] = [-12, -10, -8, -7, -5, -3, -1,
                                0, 2, 4, 5, 7, 9, 11, 12,
                                11, 10, 7, 9, 14, 12, 11, 9,
@@ -279,3 +281,40 @@ MOZART_VARIATION7["durations"] = [0.125, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625,
                                   0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625,
                                   0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625,
                                   0.25, 0.25]
+
+def GetAll():
+    return [AH_VOUS_ORIGINAL, SYAMALE_MEENAKSHI, MOZART_THEME, MOZART_VARIATION1, MOZART_VARIATION3, MOZART_VARIATION5, MOZART_VARIATION7]
+
+def GetLabels():
+    return ["AH_VOUS_ORIGINAL", "SYAMALE_MEENAKSHI", "MOZART_THEME", "MOZART_VARIATION1", "MOZART_VARIATION3", "MOZART_VARIATION5", "MOZART_VARIATION7"]
+
+def get_least_duration():
+    data = GetAll()
+    min_dur = 2
+    for dict in data:
+        for dur in dict["durations"]:
+            print("duration: {}, {}".format(dur, dur * 480))
+    return min_dur
+
+import math
+
+def get_int_dur_array():
+    data = GetAll()
+    for dict in data:
+        dict["int_durations"] = []
+        for dur in dict["durations"]:
+            dict["int_durations"].append(math.ceil(dur*48))
+
+
+def compute_adjusted_melody():
+    data = GetAll()
+    get_int_dur_array()
+    for dict in data:
+        dict["adjusted_melody"] = []
+        for dur, mel in zip(dict["int_durations"], dict["melody"]):
+            for i in range(dur):
+                dict["adjusted_melody"].append(mel)
+
+if __name__ == '__main__':
+    print("min dur: {}".format(get_least_duration()))
+    print("names: {}".format(GetLabels()))
