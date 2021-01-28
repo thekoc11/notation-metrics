@@ -1,4 +1,3 @@
-from varname import nameof
 
 AH_VOUS_ORIGINAL = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
