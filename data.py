@@ -96,6 +96,55 @@ SYAMALE_MEENAKSHI["durations"] = [0.375, 0.125, 0.25, 0.25,
                                   0.5, 0.25, 0.125, 0.125,
                                   0.5, 0.25, 0.125, 0.125]
 
+PAHI_RAMACHANDRA = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
+PAHI_RAMACHANDRA["melody"] = [0, 2, 4, 5,
+                              7, 7,
+                              9, 11, 12, 9,
+                              7, 4,
+                              5, 9, 5, 2,
+                              4, 7, 4, 0,
+                              2, 5, 2, -1,
+                              0, 0,
+                              7, 7, 7,
+                              5, 5, 5,
+                              4, 4, 4,
+                              2, 2,
+                              7, 7, 11, 9, 7,
+                              5, 5, 9, 7, 5,
+                              4, 4, 7, 5, 4,
+                              2, 2, 4, 2]
+
+PAHI_RAMACHANDRA["durations"] = [0.375, 0.125, 0.25, 0.25,
+                                 0.5, 0.5,
+                                 0.375, 0.125, 0.25, 0.25,
+                                 0.5, 0.5,
+                                 0.25, 0.25, 0.25, 0.25,
+                                 0.25, 0.25, 0.25, 0.25,
+                                 0.25, 0.25, 0.25, 0.25,
+                                 0.5, 0.5,
+                                 0.5, 0.25, 0.25,
+                                 0.5, 0.25, 0.25,
+                                 0.5, 0.25, 0.25,
+                                 0.5, 0.125, 0.125, 0.125, 0.125,
+                                 0.5, 0.25, 0.08333333, 0.08333333, 0.08333333,
+                                 0.5, 0.25, 0.08333333, 0.08333333, 0.08333333,
+                                 0.5, 0.25, 0.125, 0.125]
+PAHI_RAMACHANDRA["beat_onset"] = [1, 0, 0, 0,
+                                  1, 0,
+                                  1, 0, 0, 0,
+                                  1, 0,
+                                  1, 0, 0, 0,
+                                  1, 0, 0, 0,
+                                  1, 0, 0, 0,
+                                  1, 0,
+                                  1, 0, 0,
+                                  1, 0, 0,
+                                  1, 0, 0,
+                                  1, 0, 0, 0, 0,
+                                  1, 0, 0, 0, 0,
+                                  1, 0, 0, 0, 0,
+                                  1, 0, 0, 0]
+
 MOZART_THEME = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
 MOZART_THEME["melody"] = [0, 0,
@@ -171,6 +220,55 @@ MOZART_THEME["beat_onset"] = [1, 0,
                               1, 0,
                               1, 0, 0, 0, 0, 0,
                               1]
+
+TWINKLE_TWINKLE = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
+
+TWINKLE_TWINKLE["melody"] = [0, 0, 7, 7,
+                             9, 9, 7,
+                             5, 5, 0, 0,
+                             2, 2, 0,
+                             7, 7, 5, 5,
+                             4, 4, 2,
+                             7, 7, 5, 5,
+                             4, 4, 2,
+                             0, 0, 7, 7,
+                             9, 9, 7,
+                             5, 5, 4, 4,
+                             2, 2, 0]
+
+TWINKLE_TWINKLE["durations"] = [0.25, 0.25, 0.25, 0.25,
+                                0.25, 0.25, 0.5,
+                                0.25, 0.25, 0.25, 0.25,
+                                0.25, 0.25, 0.5,
+                                0.25, 0.25, 0.25, 0.25,
+                                0.25, 0.25, 0.5,
+                                0.25, 0.25, 0.25, 0.25,
+                                0.25, 0.25, 0.5,
+                                0.25, 0.25, 0.25, 0.25,
+                                0.25, 0.25, 0.5,
+                                0.25, 0.25, 0.25, 0.25,
+                                0.25, 0.25, 0.5]
+
+GOOSEY_GOOSEY_GANDER = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
+
+GOOSEY_GOOSEY_GANDER["melody"] = [0, 2, 0, 4, 7, 7,
+                                  9, 7, 9, 12, 7, 7,
+                                  5, 5, 5, 4, 4, 4,
+                                  2, 5, 2, -1, 0, 0,
+                                  0, 2, 0, 4, 7, 7, 7,
+                                  9, 7, 9, 12, 7, 7, 7,
+                                  9, 12, 7, 4, 9, 5, 5,
+                                  4, 4, 2, 2, 0]
+
+GOOSEY_GOOSEY_GANDER["durations"] = [0.125, 0.125, 0.125, 0.125, 0.25, 0.25,
+                                     0.125, 0.125, 0.125, 0.125, 0.25, 0.25,
+                                     0.25, 0.125, 0.125, 0.25, 0.125, 0.125,
+                                     0.125, 0.125, 0.125, 0.125, 0.25, 0.25,
+                                     0.125, 0.125, 0.125, 0.125, 0.25, 0.125, 0.125,
+                                     0.125, 0.125, 0.125, 0.125, 0.25, 0.125, 0.125,
+                                     0.125, 0.125, 0.125, 0.125, 0.25, 0.125, 0.125,
+                                     0.125, 0.125, 0.125, 0.125, 0.5]
+
 
 MOZART_VARIATION1 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
@@ -282,10 +380,10 @@ MOZART_VARIATION7["durations"] = [0.125, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625,
                                   0.25, 0.25]
 
 def GetAll():
-    return [AH_VOUS_ORIGINAL, SYAMALE_MEENAKSHI, MOZART_THEME, MOZART_VARIATION1, MOZART_VARIATION3, MOZART_VARIATION5, MOZART_VARIATION7]
+    return [AH_VOUS_ORIGINAL, SYAMALE_MEENAKSHI, PAHI_RAMACHANDRA, TWINKLE_TWINKLE, GOOSEY_GOOSEY_GANDER,  MOZART_THEME, MOZART_VARIATION1, MOZART_VARIATION3, MOZART_VARIATION5, MOZART_VARIATION7]
 
 def GetLabels():
-    return ["AH_VOUS_ORIGINAL", "SYAMALE_MEENAKSHI", "MOZART_THEME", "MOZART_VARIATION1", "MOZART_VARIATION3", "MOZART_VARIATION5", "MOZART_VARIATION7"]
+    return ["AH_VOUS_ORIGINAL", "SYAMALE_MEENAKSHI", "PAHI_RAMCHANDRA", "TWINKLE_TWINKLE", "GOOSEY_GOOSEY",  "MOZART_THEME", "MOZART_VARIATION1", "MOZART_VARIATION3", "MOZART_VARIATION5", "MOZART_VARIATION7"]
 
 def get_least_duration():
     data = GetAll()

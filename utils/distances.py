@@ -75,13 +75,13 @@ def etcDist(seq_x, seq_y, normalize_len=False):
             new_X = []
             for i in range(quot):
                 new_X += list(seq_x)
-            X = new_X
+            seq_x = new_X
         else:
             quot = m // n
             new_Y = []
             for i in range(quot):
                 new_Y += list(seq_y)
-            Y = new_Y
+            seq_y = new_Y
 
     # Compute ETC of individual sequences
     seq_x_ETC = ETC.compute_1D(seq_x, order=2, verbose=False, truncate=True)["ETC1D"]
