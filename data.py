@@ -125,6 +125,7 @@ PAHI_RAMACHANDRA["durations"] = [0.375, 0.125, 0.25, 0.25,
                                  0.5, 0.25, 0.25,
                                  0.5, 0.25, 0.25,
                                  0.5, 0.25, 0.25,
+                                 0.75, 0.25,
                                  0.5, 0.125, 0.125, 0.125, 0.125,
                                  0.5, 0.25, 0.08333333, 0.08333333, 0.08333333,
                                  0.5, 0.25, 0.08333333, 0.08333333, 0.08333333,
@@ -140,6 +141,7 @@ PAHI_RAMACHANDRA["beat_onset"] = [1, 0, 0, 0,
                                   1, 0, 0,
                                   1, 0, 0,
                                   1, 0, 0,
+                                  1, 0,
                                   1, 0, 0, 0, 0,
                                   1, 0, 0, 0, 0,
                                   1, 0, 0, 0, 0,
@@ -268,6 +270,14 @@ GOOSEY_GOOSEY_GANDER["durations"] = [0.125, 0.125, 0.125, 0.125, 0.25, 0.25,
                                      0.125, 0.125, 0.125, 0.125, 0.25, 0.125, 0.125,
                                      0.125, 0.125, 0.125, 0.125, 0.25, 0.125, 0.125,
                                      0.125, 0.125, 0.125, 0.125, 0.5]
+GOOSEY_GOOSEY_GANDER["beat_onset"] = [1, 0, 0, 0, 0, 0,
+                                      1, 0, 0, 0, 0, 0,
+                                      1, 0, 0, 0, 0, 0,
+                                      1, 0, 0, 0, 0, 0,
+                                      1, 0, 0, 0, 0, 0, 0,
+                                      1, 0, 0, 0, 0, 0, 0,
+                                      1, 0, 0, 0, 0, 0, 0,
+                                      1, 0, 0, 0, 0]
 
 
 MOZART_VARIATION1 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
@@ -383,7 +393,33 @@ def GetAll():
     return [AH_VOUS_ORIGINAL, SYAMALE_MEENAKSHI, PAHI_RAMACHANDRA, TWINKLE_TWINKLE, GOOSEY_GOOSEY_GANDER,  MOZART_THEME, MOZART_VARIATION1, MOZART_VARIATION3, MOZART_VARIATION5, MOZART_VARIATION7]
 
 def GetLabels():
-    return ["AH_VOUS_ORIGINAL", "SYAMALE_MEENAKSHI", "PAHI_RAMCHANDRA", "TWINKLE_TWINKLE", "GOOSEY_GOOSEY",  "MOZART_THEME", "MOZART_VARIATION1", "MOZART_VARIATION3", "MOZART_VARIATION5", "MOZART_VARIATION7"]
+    return ["AH_VOUS_ORIGINAL(1774)", "SYAMALE_MEENAKSHI(1905)", "PAHI_RAMCHANDRA(oral)", "TWINKLE_TWINKLE()", "GOOSEY_GOOSEY",  "MOZART_THEME(1785)", "MOZART_VARIATION1", "MOZART_VARIATION3", "MOZART_VARIATION5", "MOZART_VARIATION7"]
+
+def GetMeasureData(dict):
+    lines = []
+
+    iter = 0
+    lines_done = -1
+    curr_line = []
+    while iter < len(dict["melody"]):
+
+        if dict["beat_onset"][iter] == 1:
+            lines_done += 1
+            curr_line = []
+
+        curr_line.append(dict["melody"][iter])
+
+
+        if  curr_line not in lines:
+            lines.append(curr_line)
+
+        iter = iter + 1
+
+    return lines
+
+
+
+
 
 def get_least_duration():
     data = GetAll()
@@ -413,5 +449,8 @@ def compute_adjusted_melody():
                 dict["adjusted_melody"].append(mel)
 
 if __name__ == '__main__':
-    print("min dur: {}".format(get_least_duration()))
-    print("names: {}".format(GetLabels()))
+    # print("min dur: {}".format(get_least_duration()))
+    # print("names: {}".format(GetLabels()))
+    print(GetMeasureData(SYAMALE_MEENAKSHI))
+    print(GetMeasureData(PAHI_RAMACHANDRA))
+    print(GetMeasureData(GOOSEY_GOOSEY_GANDER))
