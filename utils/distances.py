@@ -35,14 +35,14 @@ def editDist(X, Y, m, n, normalize_len=False):
             for i in range(quot):
                 new_X += X
             X = new_X
-            print("Normalized length for X: {}".format(len(X)))
+            # print("Normalized length for X: {}".format(len(X)))
         else:
             quot = m // n
             new_Y = []
             for i in range(quot):
                 new_Y += Y
             Y = new_Y
-            print("Normalized length for Y: {}".format(len(Y)))
+            # print("Normalized length for Y: {}".format(len(Y)))
 
 
     dp = [[0 for x in range(n+1)] for x in range(m+1)]
