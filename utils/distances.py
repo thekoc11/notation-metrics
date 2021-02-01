@@ -121,10 +121,10 @@ def dtwDist(X, Y, m, n):
             cost = abs(X[i - 1] - Y[j - 1])
             last_min = np.min([dtw[i, j-1], dtw[i - 1, j], dtw[i-1, j-1]])
             dtw[i, j] = cost  + last_min
-
+    print(dtw)
     return dtw[m, n]
 
 if __name__ == '__main__':
-    X = ETC.generate(size=100, partitions=24)
-    Y = ETC.generate(size=200, partitions=24)
-    print(dtwDist(X, Y, 100, 200))
+    X = ETC.generate(size=5, partitions=2)
+    Y = ETC.generate(size=8, partitions=2)
+    print(dtwDist(X, Y, 5, 8))

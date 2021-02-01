@@ -365,6 +365,15 @@ MOZART_VARIATION5["durations"] = [0.25, 0.125, 0.125,
                                   0.125, 0.125, 0.125, 0.125,
                                   0.125, 0.125, 0.125, 0.125,
                                   0.25, 0.25]
+MOZART_VARIATION5["beat_onset"] = [1, 0, 0,
+                                  1, 0, 0,
+                                  1, 0, 0,
+                                  1, 0, 0,
+                                  1, 0, 0, 0,
+                                  1, 0, 0, 0,
+                                  1, 0, 0, 0,
+                                  1, 0]
+
 
 MOZART_VARIATION6 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 #### TODO: VARIATION 6 incomplete
@@ -388,6 +397,14 @@ MOZART_VARIATION7["durations"] = [0.125, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625,
                                   0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625,
                                   0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625, 0.0625,
                                   0.25, 0.25]
+MOZART_VARIATION7["beat_onset"] = [1, 0, 0, 0, 0, 0, 0,
+                                  1, 0, 0, 0, 0, 0, 0, 0,
+                                  1, 0, 0, 0, 0, 0, 0, 0,
+                                  1, 0, 0, 0, 0, 0, 0, 0,
+                                  1, 0, 0, 0, 0, 0, 0, 0,
+                                  1, 0, 0, 0, 0, 0, 0, 0,
+                                  1, 0, 0, 0, 0, 0, 0, 0,
+                                  1, 0]
 
 def GetAll():
     return [AH_VOUS_ORIGINAL, SYAMALE_MEENAKSHI, PAHI_RAMACHANDRA, TWINKLE_TWINKLE, GOOSEY_GOOSEY_GANDER,  MOZART_THEME, MOZART_VARIATION1, MOZART_VARIATION3, MOZART_VARIATION5, MOZART_VARIATION7]
@@ -420,6 +437,43 @@ def GetMeasureData(dict):
 
 
 
+def GetNMeasures(dict, n, start=1):
+    mel = dict["melody"]
+    final = []
+    indices = []
+    num_measures_encountered = -1
+    iter = 0
+    add = False
+    while iter < len(mel):
+        if dict["beat_onset"][iter] == 1:
+            num_measures_encountered += 1
+        if n != 'all':
+            if num_measures_encountered == start - 1:
+                add = True
+
+            if num_measures_encountered == start + n - 1:
+                iter = 99999
+        else:
+            add = True
+
+        if iter != 99999 and add:
+            final.append(mel[iter])
+            indices.append(iter)
+
+        iter += 1
+
+    return final, indices
+
+def GetNMeasuresAdjusted(dict, n, start=1):
+    get_int_dur_array()
+    mel, indices = GetNMeasures(dict, n, start)
+    n_mel = len(mel)
+    dur_ints = dict["int_durations"][indices[0]:indices[n_mel - 1]]
+    final = []
+    for dur, m in zip(dur_ints, mel):
+        for i in range(dur):
+            final.append(m)
+    return final
 
 def get_least_duration():
     data = GetAll()
@@ -448,9 +502,15 @@ def compute_adjusted_melody():
             for i in range(dur):
                 dict["adjusted_melody"].append(mel)
 
+def PruneRests(arr):
+    final = []
+    for ele in arr:
+        if ele != 99999:
+            final.append(ele)
+    return final
+
 if __name__ == '__main__':
     # print("min dur: {}".format(get_least_duration()))
     # print("names: {}".format(GetLabels()))
-    print(GetMeasureData(SYAMALE_MEENAKSHI))
-    print(GetMeasureData(PAHI_RAMACHANDRA))
-    print(GetMeasureData(GOOSEY_GOOSEY_GANDER))
+    # print(GetNMeasuresAdjusted(SYAMALE_MEENAKSHI, 'all'))
+    print(GetNMeasuresAdjusted(MOZART_VARIATION5, 'all'))
