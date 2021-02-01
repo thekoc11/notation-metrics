@@ -1,5 +1,6 @@
 import ETC
 from scipy.spatial.distance import hamming
+import numpy as np
 
 def LCSubSeq(X, Y, m, n):
     """
@@ -106,3 +107,24 @@ def hammingDist(X, Y, m, n):
 
     dist = hamming(X, Y)
     return dist
+
+def dtwDist(X, Y, m, n):
+    dtw = np.zeros((m + 1, n + 1), dtype='int64')
+    C = []
+    for i in range(m + 1):
+        for j in range(n + 1):
+            dtw[i, j] = 99999
+    dtw[0, 0] = 0
+
+    for i in range(1, m+1):
+        for j in range(1, n + 1):
+            cost = abs(X[i - 1] - Y[j - 1])
+            last_min = np.min([dtw[i, j-1], dtw[i - 1, j], dtw[i-1, j-1]])
+            dtw[i, j] = cost  + last_min
+
+    return dtw[m, n]
+
+if __name__ == '__main__':
+    X = ETC.generate(size=100, partitions=24)
+    Y = ETC.generate(size=200, partitions=24)
+    print(dtwDist(X, Y, 100, 200))
