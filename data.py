@@ -410,7 +410,7 @@ def GetAll():
     return [AH_VOUS_ORIGINAL, SYAMALE_MEENAKSHI, PAHI_RAMACHANDRA, TWINKLE_TWINKLE, GOOSEY_GOOSEY_GANDER,  MOZART_THEME, MOZART_VARIATION1, MOZART_VARIATION3, MOZART_VARIATION5, MOZART_VARIATION7]
 
 def GetLabels():
-    return ["AH_VOUS_ORIGINAL(1774)", "SYAMALE_MEENAKSHI(1905)", "PAHI_RAMCHANDRA(oral)", "TWINKLE_TWINKLE()", "GOOSEY_GOOSEY",  "MOZART_THEME(1785)", "MOZART_VARIATION1", "MOZART_VARIATION3", "MOZART_VARIATION5", "MOZART_VARIATION7"]
+    return ["Ah! vous dirai-je(1774)", "Shaymale Meenakshi(1905)", "Pahi Ramachandra(oral)", "The Star(1838)", "Goosey Goosey Gander(1784)",  "Ah! vous dirai-je(1785)", "Mozart-Variation 1(1785)", "Mozart-Variation 3(1785)", "Mozart-Variation 5(1785)", "Mozart-Variation 7(1785)"]
 
 def GetMeasureData(dict):
     lines = []
@@ -505,7 +505,7 @@ def compute_adjusted_melody():
 def PruneRests(arr):
     final = []
     for ele in arr:
-        if ele != 99999:
+        if not ele >= 99999:
             final.append(ele)
     return final
 
@@ -513,4 +513,30 @@ if __name__ == '__main__':
     # print("min dur: {}".format(get_least_duration()))
     # print("names: {}".format(GetLabels()))
     # print(GetNMeasuresAdjusted(SYAMALE_MEENAKSHI, 'all'))
-    print(GetNMeasuresAdjusted(MOZART_VARIATION5, 'all'))
+    # print(PruneRests(GetNMeasuresAdjusted(MOZART_VARIATION5, 'all')))
+    dicts = GetAll()
+    x = dicts[1]["melody"]
+    y = dicts[1]["durations"]
+    z = []
+    z_start = -1
+    for ele in dicts[1]["beat_onset"]:
+        if ele == 1:
+            z_start += 1
+        z.append(z_start)
+    x1 = dicts[2]["melody"]
+    y1 = dicts[2]["durations"]
+    z1 = []
+    z1_start = -1
+    for ele in dicts[2]["beat_onset"]:
+        if ele == 1:
+            z1_start += 1
+        z1.append(z1_start)
+
+    from mpl_toolkits import mplot3d
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    ax = plt.axes(projection="3d")
+    ax.plot3D(x, z, y, 'black')
+    ax.plot3D(x1, z1, y1, 'red')
+    ax.set_title("Syamale Meenakshi(black) vs Pahi Ramchandra(red)")
+    plt.show()

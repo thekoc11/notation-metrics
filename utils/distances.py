@@ -121,7 +121,7 @@ def dtwDist(X, Y, m, n):
             cost = abs(X[i - 1] - Y[j - 1])
             last_min = np.min([dtw[i, j-1], dtw[i - 1, j], dtw[i-1, j-1]])
             dtw[i, j] = cost  + last_min
-    print(dtw)
+    # print(dtw)
     return dtw[m, n]
 
 if __name__ == '__main__':
