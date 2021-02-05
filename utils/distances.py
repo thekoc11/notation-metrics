@@ -124,6 +124,46 @@ def dtwDist(X, Y, m, n):
     # print(dtw)
     return dtw[m, n]
 
+
+def GetDistanceMeasures(arrs, rest_pruner=None):
+    LCSMatrix = np.zeros((len(arrs), len(arrs)))
+    EDMatrix = np.zeros((len(arrs), len(arrs)))
+    EDNormMatrix = np.zeros((len(arrs), len(arrs)))
+    DTWMatrix = np.zeros((len(arrs), len(arrs)))
+    HDMatrix = np.zeros((len(arrs), len(arrs)))
+    dETCMatrix = np.zeros((len(arrs), len(arrs)))
+    Causility_Matrix = np.zeros((len(arrs), len(arrs)))
+    Causility_Matrix_LZ = np.zeros((len(arrs), len(arrs)))
+    Causility_Matrix_ETCP = np.zeros((len(arrs), len(arrs)))
+
+    for i in range(len(arrs)):
+        m_i = arrs[i]
+        if not rest_pruner == None:
+            m_i_no_rests = rest_pruner(m_i)
+        else:
+            m_i_no_rests = m_i
+        for ii in range(len(arrs)):
+            m_ii = arrs[ii]
+            if not rest_pruner == None:
+                m_ii_no_rests = rest_pruner(m_ii)
+            else:
+                m_ii_no_rests = m_ii
+            LCSMatrix[i][ii] = LCSubSeq(m_i, m_ii, len(m_i), len(m_ii))
+            EDMatrix[i][ii] = editDist(m_i, m_ii, len(m_i), len(m_ii), normalize_len=True)
+            DTWMatrix[i][ii] = dtwDist(m_i_no_rests, m_ii_no_rests, len(m_i_no_rests), len(m_ii_no_rests))
+            HDMatrix[i][ii] = hammingDist(m_i, m_ii, len(m_i), len(m_ii))
+            dETCMatrix[i][ii] = etcDist(m_i, m_ii)
+            Causility_Matrix[i][ii] =  1 if ETC.CCM_causality(m_i, m_ii)['ETCE_cause'] == 'x' else 0
+            Causility_Matrix_LZ[i][ii] =  1 if ETC.CCM_causality(m_i, m_ii)['LZP_cause'] == 'x' else 0
+            Causility_Matrix_ETCP[i][ii] =  1 if ETC.CCM_causality(m_i, m_ii)['ETCP_cause'] == 'x' else 0
+
+    for i in range(len(arrs)):
+        EDNormMatrix[i] = EDMatrix[i] / LCSMatrix[i][i]
+
+
+    return LCSMatrix, EDMatrix, EDNormMatrix, DTWMatrix, HDMatrix, dETCMatrix, Causility_Matrix, Causility_Matrix_LZ, Causility_Matrix_ETCP
+
+
 if __name__ == '__main__':
     X = ETC.generate(size=5, partitions=2)
     Y = ETC.generate(size=8, partitions=2)
