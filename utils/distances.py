@@ -194,9 +194,9 @@ def GetDistanceMeasures(arrs, rest_pruner=None, adder=36):
             DTWMatrix[i][ii] = dtwDist(m_i_no_rests, m_ii_no_rests, len(m_i_no_rests), len(m_ii_no_rests))
             HDMatrix[i][ii] = hammingDist(m_i, m_ii, len(m_i), len(m_ii))
             dETCMatrix[i][ii] = etcDist(m_i, m_ii)
-            Causility_Matrix[i][ii] =  1 if ETC.CCM_causality(m_i_no_rests, m_ii_no_rests)['ETCE_cause'] == 'x' else 0
-            Causility_Matrix_LZ[i][ii] =  1 if ETC.CCM_causality(m_i_no_rests, m_ii_no_rests)['LZP_cause'] == 'x' else 0
-            Causility_Matrix_ETCP[i][ii] =  1 if ETC.CCM_causality(m_i_no_rests, m_ii_no_rests)['ETCP_cause'] == 'x' else 0
+            # Causility_Matrix[i][ii] =  1 if ETC.CCM_causality(m_i_no_rests, m_ii_no_rests)['ETCE_cause'] == 'x' else 0
+            # Causility_Matrix_LZ[i][ii] =  1 if ETC.CCM_causality(m_i_no_rests, m_ii_no_rests)['LZP_cause'] == 'x' else 0
+            # Causility_Matrix_ETCP[i][ii] =  1 if ETC.CCM_causality(m_i_no_rests, m_ii_no_rests)['ETCP_cause'] == 'x' else 0
 
     for i in range(len(arrs)):
         EDNormMatrix[i] = EDMatrix[i] / LCSMatrix[i][i]
