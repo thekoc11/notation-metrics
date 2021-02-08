@@ -251,6 +251,20 @@ TWINKLE_TWINKLE["durations"] = [0.25, 0.25, 0.25, 0.25,
                                 0.25, 0.25, 0.25, 0.25,
                                 0.25, 0.25, 0.5]
 
+TWINKLE_TWINKLE["beat_onset"] = [1, 0, 0, 0,
+                                 1, 0, 0,
+                                 1, 0, 0, 0,
+                                 1, 0, 0,
+                                 1, 0, 0, 0,
+                                 1, 0, 0,
+                                 1, 0, 0, 0,
+                                 1, 0, 0,
+                                 1, 0, 0, 0,
+                                 1, 0, 0,
+                                 1, 0, 0, 0,
+                                 1, 0, 0]
+
+
 GOOSEY_GOOSEY_GANDER = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
 GOOSEY_GOOSEY_GANDER["melody"] = [0, 2, 0, 4, 7, 7,
@@ -412,6 +426,10 @@ def GetAll():
 def GetLabels():
     return ["Ah! vous dirai-je(1774)", "Shaymale Meenakshi(1905)", "Pahi Ramachandra(oral)", "The Star(1838)", "Goosey Goosey Gander(1784)",  "Ah! vous dirai-je(1785)", "Mozart-Variation 1(1785)", "Mozart-Variation 3(1785)", "Mozart-Variation 5(1785)", "Mozart-Variation 7(1785)"]
 
+def GetSignificantLabels():
+    return ["Ah! vous dirai-je(1774)", "Shaymale Meenakshi(1905)", "Pahi Ramachandra(oral)", "The Star(1838)", "Goosey Goosey Gander(1784)",  "Ah! vous dirai-je(1785)"]
+
+
 def GetMeasureData(dict):
     lines = []
 
@@ -434,7 +452,46 @@ def GetMeasureData(dict):
 
     return lines
 
+def GetEuclideanData(dict, n, start=1):
+    mel=dict["melody"]
+    dur=dict["durations"]
+    meas_dat = dict["beat_onset"]
+    meas_start = -1
+    meas = []
+    for d in meas_dat:
+        if d == 1:
+            meas_start += 1
+        meas.append(meas_start)
 
+    final = []
+    indices = []
+    num_measures_encountered = -1
+    iter = 0
+    add = False
+    while iter < len(mel):
+        if dict["beat_onset"][iter] == 1:
+            num_measures_encountered += 1
+        if n != 'all':
+            if num_measures_encountered == start - 1:
+                add = True
+
+            if num_measures_encountered == start + n - 1:
+                iter = 99999
+        else:
+            add = True
+
+        if iter < 99999:
+            if not (mel[iter] < 99999):
+                add = False
+
+
+        if iter < 99999 and add:
+            final.append((mel[iter], dur[iter], meas[iter]))
+            indices.append(iter)
+
+        iter += 1
+
+    return final, indices
 
 
 def GetNMeasures(dict, n, start=1):
@@ -456,7 +513,7 @@ def GetNMeasures(dict, n, start=1):
         else:
             add = True
 
-        if iter != 99999 and add:
+        if iter < 99999 and add:
             final.append(mel[iter])
             indices.append(iter)
 
@@ -514,29 +571,30 @@ if __name__ == '__main__':
     # print("names: {}".format(GetLabels()))
     # print(GetNMeasuresAdjusted(SYAMALE_MEENAKSHI, 'all'))
     # print(PruneRests(GetNMeasuresAdjusted(MOZART_VARIATION5, 'all')))
-    dicts = GetAll()
-    x = dicts[1]["melody"]
-    y = dicts[1]["durations"]
-    z = []
-    z_start = -1
-    for ele in dicts[1]["beat_onset"]:
-        if ele == 1:
-            z_start += 1
-        z.append(z_start)
-    x1 = dicts[2]["melody"]
-    y1 = dicts[2]["durations"]
-    z1 = []
-    z1_start = -1
-    for ele in dicts[2]["beat_onset"]:
-        if ele == 1:
-            z1_start += 1
-        z1.append(z1_start)
-
-    from mpl_toolkits import mplot3d
-    import matplotlib.pyplot as plt
-    fig = plt.figure()
-    ax = plt.axes(projection="3d")
-    ax.plot3D(x, z, y, 'black')
-    ax.plot3D(x1, z1, y1, 'red')
-    ax.set_title("Syamale Meenakshi(black) vs Pahi Ramchandra(red)")
-    plt.show()
+    # dicts = GetAll()
+    # x = dicts[1]["melody"]
+    # y = dicts[1]["durations"]
+    # z = []
+    # z_start = -1
+    # for ele in dicts[1]["beat_onset"]:
+    #     if ele == 1:
+    #         z_start += 1
+    #     z.append(z_start)
+    # x1 = dicts[2]["melody"]
+    # y1 = dicts[2]["durations"]
+    # z1 = []
+    # z1_start = -1
+    # for ele in dicts[2]["beat_onset"]:
+    #     if ele == 1:
+    #         z1_start += 1
+    #     z1.append(z1_start)
+    #
+    # from mpl_toolkits import mplot3d
+    # import matplotlib.pyplot as plt
+    # fig = plt.figure()
+    # ax = plt.axes(projection="3d")
+    # ax.plot3D(x, z, y, 'black')
+    # ax.plot3D(x1, z1, y1, 'red')
+    # ax.set_title("Syamale Meenakshi(black) vs Pahi Ramchandra(red)")
+    # plt.show()
+    print(GetEuclideanData(AH_VOUS_ORIGINAL, 4, 1)[0])

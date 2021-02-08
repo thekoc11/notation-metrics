@@ -118,6 +118,22 @@ def dtwDist(X, Y, m, n):
 
     for i in range(1, m+1):
         for j in range(1, n + 1):
+            cost = abs(X[i - 1] - Y[j - 1])
+            last_min = np.min([dtw[i, j-1], dtw[i - 1, j], dtw[i-1, j-1]])
+            dtw[i, j] = cost  + last_min
+    # print(dtw)
+    return dtw[m, n]
+
+def dtwDistSymbolic(X, Y, m, n):
+    dtw = np.zeros((m + 1, n + 1), dtype='int64')
+    C = []
+    for i in range(m + 1):
+        for j in range(n + 1):
+            dtw[i, j] = 99999
+    dtw[0, 0] = 0
+
+    for i in range(1, m+1):
+        for j in range(1, n + 1):
             cost = 0 if X[i - 1] == Y[j - 1] else 1
             last_min = np.min([dtw[i, j-1], dtw[i - 1, j], dtw[i-1, j-1]])
             dtw[i, j] = cost  + last_min
@@ -125,7 +141,29 @@ def dtwDist(X, Y, m, n):
     return dtw[m, n]
 
 
-def GetDistanceMeasures(arrs, rest_pruner=None):
+def dtwEuclidean(X, Y, m, n):
+    if len(X[0]) != 3 or len(Y[0])  != 3:
+        raise ValueError("Threee dimensional data expected. One or both of X and Y are not three dimensional")
+    dtw = np.zeros((m + 1, n + 1), dtype='int64')
+    C = []
+    for i in range(m + 1):
+        for j in range(n + 1):
+            dtw[i, j] = 99999
+    dtw[0, 0] = 0
+
+    for i in range(1, m+1):
+        for j in range(1, n + 1):
+            cost = _euclideanDistance(X[i-1][0], X[i-1][1], X[i-1][2], Y[j-1][0], Y[j-1][1], Y[j-1][2]) #0 if X[i - 1] == Y[j - 1] else 1
+            last_min = np.min([dtw[i, j-1], dtw[i - 1, j], dtw[i-1, j-1]])
+            dtw[i, j] = cost  + last_min
+    # print(dtw)
+    return dtw[m, n]
+
+def _euclideanDistance(note1, dur1, meas1, note2, dur2, meas2):
+    return np.sqrt((note2 - note1)**2 + (dur2 - dur1)**2 + (meas2-meas1)**2)
+
+
+def GetDistanceMeasures(arrs, rest_pruner=None, adder=36):
     LCSMatrix = np.zeros((len(arrs), len(arrs)))
     EDMatrix = np.zeros((len(arrs), len(arrs)))
     EDNormMatrix = np.zeros((len(arrs), len(arrs)))
@@ -142,20 +180,23 @@ def GetDistanceMeasures(arrs, rest_pruner=None):
             m_i_no_rests = rest_pruner(m_i)
         else:
             m_i_no_rests = m_i
+        m_i = [x + adder for x in m_i]
+
         for ii in range(len(arrs)):
             m_ii = arrs[ii]
             if not rest_pruner == None:
                 m_ii_no_rests = rest_pruner(m_ii)
             else:
                 m_ii_no_rests = m_ii
+            m_ii = [x + adder for x in m_ii]
             LCSMatrix[i][ii] = LCSubSeq(m_i, m_ii, len(m_i), len(m_ii))
             EDMatrix[i][ii] = editDist(m_i, m_ii, len(m_i), len(m_ii), normalize_len=True)
             DTWMatrix[i][ii] = dtwDist(m_i_no_rests, m_ii_no_rests, len(m_i_no_rests), len(m_ii_no_rests))
             HDMatrix[i][ii] = hammingDist(m_i, m_ii, len(m_i), len(m_ii))
             dETCMatrix[i][ii] = etcDist(m_i, m_ii)
-            Causility_Matrix[i][ii] =  1 if ETC.CCM_causality(m_i, m_ii)['ETCE_cause'] == 'x' else 0
-            Causility_Matrix_LZ[i][ii] =  1 if ETC.CCM_causality(m_i, m_ii)['LZP_cause'] == 'x' else 0
-            Causility_Matrix_ETCP[i][ii] =  1 if ETC.CCM_causality(m_i, m_ii)['ETCP_cause'] == 'x' else 0
+            Causility_Matrix[i][ii] =  1 if ETC.CCM_causality(m_i_no_rests, m_ii_no_rests)['ETCE_cause'] == 'x' else 0
+            Causility_Matrix_LZ[i][ii] =  1 if ETC.CCM_causality(m_i_no_rests, m_ii_no_rests)['LZP_cause'] == 'x' else 0
+            Causility_Matrix_ETCP[i][ii] =  1 if ETC.CCM_causality(m_i_no_rests, m_ii_no_rests)['ETCP_cause'] == 'x' else 0
 
     for i in range(len(arrs)):
         EDNormMatrix[i] = EDMatrix[i] / LCSMatrix[i][i]
