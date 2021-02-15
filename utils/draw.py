@@ -49,17 +49,14 @@ for dic in dicts:
     adjusted_melodies.append(dic["adjusted_melody"])
 
 
-def draw_weighted_graph(dist_matrix, pivot=400):
+def draw_weighted_graph(dist_matrix, pivot=400, data_labels=labels):
     G = pgv.AGraph(directed=False, strict=False)
-    G.add_nodes_from(labels)
+    G.add_nodes_from(data_labels)
     for i in range(len(dist_matrix)):
         for j in range(i, len(dist_matrix)):
             if i != j and dist_matrix[i, j] > 0:
                 style = 'solid' if dist_matrix[i, j] < pivot else 'dotted'
-                if (i == 1 and j == 3) or (i == 2 and j == 3) or (i == 3 and j == 1) or (i == 3 and j == 2):
-                    pass
-                else:
-                    G.add_edge(labels[i], labels[j], weight=dist_matrix[i, j]/1000, label=dist_matrix[i, j], style=style)
+                G.add_edge(data_labels[i], data_labels[j], weight=dist_matrix[i, j]/1000, label=dist_matrix[i, j], style=style)
 
     M = G.number_of_edges()
 
@@ -83,16 +80,12 @@ def draw_directed_graph(dist_matrix, pivot = 0.66):
     G.layout("dot")
     print(G.string())
 
-def draw_causal_inference(dist_matrix):
+def draw_causal_inference(dist_matrix, data_labels=labels):
     G = pgv.AGraph(directed=True, strict=False, rankdir="TD")
-    G.add_nodes_from(labels)
+    G.add_nodes_from(data_labels)
     for i in range(len(dist_matrix)):
         for ii in range(len(dist_matrix[i])):
             if i!= ii and dist_matrix[i, ii] > 0:
-                style = 'solid'
-                if (i == 1 and ii == 3) or (i == 2 and ii == 3) or (i == 3 and ii == 1) or (i == 3 and ii == 2):
-                    pass
-                else:
-                    G.add_edge(labels[i], labels[ii], weight=dist_matrix[i, ii])
+                G.add_edge(data_labels[i], data_labels[ii], weight=dist_matrix[i, ii])
     G.layout("dot")
     print(G.string())

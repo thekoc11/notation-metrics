@@ -559,12 +559,44 @@ def compute_adjusted_melody():
             for i in range(dur):
                 dict["adjusted_melody"].append(mel)
 
+def GetAdjustedMelody(euclideanData):
+    ret = []
+    for ele in euclideanData:
+        int_duration = math.ceil(ele[2] * 480)
+        if ele[1] < 99999:
+            for i in range(int_duration):
+                ret.append(ele[1] + 21)
+    return ret
+
 def PruneRests(arr):
     final = []
     for ele in arr:
         if not ele >= 99999:
             final.append(ele)
     return final
+
+def GetSevenScale(arr, scale="mayamalavagowla"):
+    # Raga Mayamalavagowla
+    # 0 = 0
+    # 1 = 1
+    # 4 = 2
+    # 5 = 3
+    # 7 = 4
+    # 8 = 5
+    # 11 = 6
+    scale_arr = []
+    if scale == "mayamalavagowla":
+        scale_arr = [0,1, 4, 5, 7, 8, 11]
+
+    new_arr = []
+    for ele in arr:
+        if ele == 99999:
+            new_arr.append(ele)
+        elif ele in scale_arr:
+            new_arr.append(scale_arr.index(ele))
+
+
+    return new_arr
 
 if __name__ == '__main__':
     # print("min dur: {}".format(get_least_duration()))

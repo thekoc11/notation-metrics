@@ -204,6 +204,19 @@ def GetDistanceMeasures(arrs, rest_pruner=None, adder=36):
 
     return LCSMatrix, EDMatrix, EDNormMatrix, DTWMatrix, HDMatrix, dETCMatrix, Causility_Matrix, Causility_Matrix_LZ, Causility_Matrix_ETCP
 
+def GetCausalityMetrics(adjusted_melodies):
+    ETCE = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))
+    ETCP = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))
+    LZP = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))
+
+    for i in range(len(adjusted_melodies)):
+        for j in range(len(adjusted_melodies)):
+            ETCE[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCE_cause'] == 'x' else 0
+            ETCP[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCP_cause'] == 'x' else 0
+            LZP[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['LZP_cause'] == 'x' else 0
+
+    return ETCE, ETCP, LZP
+
 
 if __name__ == '__main__':
     X = ETC.generate(size=5, partitions=2)
