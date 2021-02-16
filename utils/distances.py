@@ -141,7 +141,9 @@ def dtwDistSymbolic(X, Y, m, n):
     return dtw[m, n]
 
 
-def dtwEuclidean(X, Y, m, n):
+def dtwEuclidean(X, Y):
+    m = len(X)
+    n = len(Y)
     if len(X[0]) != 3 or len(Y[0])  != 3:
         raise ValueError("Threee dimensional data expected. One or both of X and Y are not three dimensional")
     dtw = np.zeros((m + 1, n + 1), dtype='int64')
@@ -158,6 +160,9 @@ def dtwEuclidean(X, Y, m, n):
             dtw[i, j] = cost  + last_min
     # print(dtw)
     return dtw[m, n]
+
+def GetLZPCausality(X, Y):
+    return 1 if ETC.CCM_causality(X, Y)['LZP_cause'] == 'x' else 0
 
 def _euclideanDistance(note1, dur1, meas1, note2, dur2, meas2):
     return np.sqrt((note2 - note1)**2 + (dur2 - dur1)**2 + (meas2-meas1)**2)
