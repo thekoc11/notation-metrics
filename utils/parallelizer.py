@@ -2,19 +2,6 @@ import multiprocessing
 import numpy as np
 from itertools import product
 
-result  = []
-
-def square_list(my_list, idx, q):
-    new_list = []
-    for num in my_list:
-        new_list.append(num * num)
-    q.put((idx, new_list))
-
-def print_queue(q):
-    print("Queue elements:")
-    while not q.empty():
-        print(q.get())
-    print("Queue is now empty!")
 
 def list_parallelizer(target, list):
     n_thrs = len(list) * len(list)

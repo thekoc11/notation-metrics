@@ -164,6 +164,9 @@ def dtwEuclidean(X, Y):
 def GetLZPCausality(X, Y):
     return 1 if ETC.CCM_causality(X, Y)['LZP_cause'] == 'x' else 0
 
+def GetLZPCausalityParallel(XYTuple):
+    return ETC.CCM_causality_parallel(XYTuple)
+
 def _euclideanDistance(note1, dur1, meas1, note2, dur2, meas2):
     return np.sqrt((note2 - note1)**2 + (dur2 - dur1)**2 + (meas2-meas1)**2)
 
