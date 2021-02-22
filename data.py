@@ -598,6 +598,9 @@ def GetSevenScale(arr, scale="mayamalavagowla"):
 
     return new_arr
 
+def ConvertToSeven(melody):
+    twelve2seven = {0: 0, 2: 1, 4: 2, 5: 3, 7: 4, 9: 5, 11: 6}
+
 if __name__ == '__main__':
     # print("min dur: {}".format(get_least_duration()))
     # print("names: {}".format(GetLabels()))
