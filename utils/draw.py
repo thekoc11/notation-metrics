@@ -109,13 +109,20 @@ def draw_directed_graph(dist_matrix, pivot = 0.66):
     G.layout("dot")
     print(G.string())
 
-def draw_causal_inference(dist_matrix, data_labels=labels):
+def draw_causal_inference(dist_matrix, data_labels=labels, mela="Mayamalavagowla", alt_labels=None):
     G = pgv.AGraph(directed=True, strict=False, rankdir="TD")
-    G.add_nodes_from(data_labels, fontsize=48)
+    G.add_nodes_from(data_labels, fontsize=36) if alt_labels is None else G.add_nodes_from(alt_labels, fontsize=42)
+    curr_labels = data_labels if alt_labels is None else alt_labels
+    for i in range(len(data_labels)):
+        if mela in  data_labels[i] or "Mayamalavgowla" in data_labels[i]:
+            G.get_node(curr_labels[i]).attr["color"] = "grey"
+            G.get_node(curr_labels[i]).attr["fontcolor"] = "white"
+            G.get_node(curr_labels[i]).attr["style"] = "filled"
+
     for i in range(len(dist_matrix)):
         for ii in range(len(dist_matrix[i])):
             if i!= ii and dist_matrix[i, ii] > 0:
-                G.add_edge(data_labels[i], data_labels[ii], weight=dist_matrix[i, ii])
+                G.add_edge(curr_labels[i], curr_labels[ii], weight=dist_matrix[i, ii])
     G.layout("dot")
     print(G.string())
 
