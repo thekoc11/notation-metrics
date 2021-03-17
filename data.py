@@ -427,7 +427,7 @@ def GetLabels():
     return ["Ah! vous dirai-je(1774)", "Shaymale Meenakshi(1905)", "Pahi Ramachandra(oral)", "The Star(1838)", "Goosey Goosey Gander(1784)",  "Ah! vous dirai-je(1785)", "Mozart-Variation 1(1785)", "Mozart-Variation 3(1785)", "Mozart-Variation 5(1785)", "Mozart-Variation 7(1785)"]
 
 def GetSignificantLabels():
-    return ["Ah! vous dirai-je(1774)", "Shaymale Meenakshi(1905)", "Pahi Ramachandra(oral)", "The Star(1838)", "Goosey Goosey Gander(1784)",  "Ah! vous dirai-je(1785)"]
+    return ["Ah! Vous Dirai-Je (1774)(celtic)", "Shaymale Meenakshi (1905)", "Pahi Ramachandra (Traditional)", "The Star (1838)(celtic)", "Goosey Goosey Gander (1784)(celtic)",  "Ah! Vous Dirai-Je(1785)(celtic)"]
 
 
 def GetMeasureData(dict):
@@ -486,7 +486,7 @@ def GetEuclideanData(dict, n, start=1):
 
 
         if iter < 99999 and add:
-            final.append((mel[iter], dur[iter], meas[iter]))
+            final.append(( meas[iter], mel[iter], dur[iter]))
             indices.append(iter)
 
         iter += 1
