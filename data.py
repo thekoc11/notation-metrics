@@ -575,6 +575,13 @@ def PruneRests(arr):
             final.append(ele)
     return final
 
+def PruneRestsMultiAxis(coords, note_axis=0):
+    new_arr = []
+    for c in coords:
+        if c[note_axis] < 99999:
+            new_arr.append(c)
+    return new_arr
+
 def GetSevenScale(arr, scale="mayamalavagowla"):
     # Raga Mayamalavagowla
     # 0 = 0
@@ -600,6 +607,33 @@ def GetSevenScale(arr, scale="mayamalavagowla"):
 
 def ConvertToSeven(melody):
     twelve2seven = {0: 0, 2: 1, 4: 2, 5: 3, 7: 4, 9: 5, 11: 6}
+
+def GetSongCoords2d(coords3d):
+    measures = -1
+    retVal = []
+    cum_dur = -1
+    for i in range(len(coords3d["beat_onset"])):
+        if coords3d["beat_onset"][i] == 1:
+            measures = measures + 1
+            cum_dur = coords3d["durations"][i]
+        else:
+            cum_dur += coords3d["durations"][i]
+
+        x = measures + cum_dur
+        y = coords3d["melody"][i]
+        retVal.append((x, y))
+    return retVal
+
+def xtractAxes(tupList):
+    size = len(tupList[0])
+    retval = []
+    for i in range(size):
+        retval.append([])
+
+    for item in tupList:
+        for i in range(size):
+            retval[i].append(item[i])
+    return retval
 
 if __name__ == '__main__':
     # print("min dur: {}".format(get_least_duration()))
@@ -632,4 +666,5 @@ if __name__ == '__main__':
     # ax.plot3D(x1, z1, y1, 'red')
     # ax.set_title("Syamale Meenakshi(black) vs Pahi Ramchandra(red)")
     # plt.show()
-    print(GetEuclideanData(AH_VOUS_ORIGINAL, 4, 1)[0])
+    # print(GetEuclideanData(AH_VOUS_ORIGINAL, 4, 1)[0])
+    print(xtractAxes(GetSongCoords2d(SYAMALE_MEENAKSHI)))

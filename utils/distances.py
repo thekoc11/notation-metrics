@@ -1,6 +1,7 @@
 import ETC
 from scipy.spatial.distance import hamming
 import numpy as np
+import similaritymeasures
 
 def LCSubSeq(X, Y, m, n):
     """
@@ -144,9 +145,15 @@ def dtwDistSymbolic(X, Y, m, n):
 def dtwEuclidean(X, Y):
     m = len(X)
     n = len(Y)
-    if len(X[0]) != 3 or len(Y[0])  != 3:
-        raise ValueError("Threee dimensional data expected. One or both of X and Y are not three dimensional")
-    dtw = np.zeros((m + 1, n + 1), dtype='int64')
+    threeD = True
+    if len(X[0]) == 3 and len(Y[0])  == 3:
+        threeD = True
+    elif len(X[0]) == 2 and len(Y[0]) == 2:
+        threeD = False
+    else:
+        raise ValueError("Two/Three dimensional data expected. One or both of X and Y are not two/three dimensional, or that X.shape != Y.shape")
+
+    dtw = np.zeros((m + 1, n + 1), dtype='float64')
     C = []
     for i in range(m + 1):
         for j in range(n + 1):
@@ -155,11 +162,44 @@ def dtwEuclidean(X, Y):
 
     for i in range(1, m+1):
         for j in range(1, n + 1):
-            cost = _euclideanDistance(X[i-1][0], X[i-1][1], X[i-1][2], Y[j-1][0], Y[j-1][1], Y[j-1][2]) #0 if X[i - 1] == Y[j - 1] else 1
+            if threeD:
+                cost = _euclideanDistance(X[i-1][0], X[i-1][1], X[i-1][2], Y[j-1][0], Y[j-1][1], Y[j-1][2]) #0 if X[i - 1] == Y[j - 1] else 1
+            else:
+                cost = _euclideanDistance2d(X[i-1], Y[j-1])
             last_min = np.min([dtw[i, j-1], dtw[i - 1, j], dtw[i-1, j-1]])
             dtw[i, j] = cost  + last_min
     # print(dtw)
     return dtw[m, n]
+
+def frechetEuclidean(X, Y):
+    m = len(X)
+    n = len(Y)
+    ca = np.zeros((m, n), dtype='float64')
+    ca.fill(-1.0)
+
+    def calculate(i, j):
+        if ca[i, j] > -1.0:
+            return ca[i, j]
+
+        d = _euclideanDistance2d(X[i], Y[j])
+        if i == 0 and j == 0:
+            ca[i, j] = d
+        elif i > 0 and j == 0:
+            ca[i,  j] = max(calculate(i-1, 0), d)
+        elif i == 0 and j > 0:
+            ca[i, j] = max(calculate(0, j-1), d)
+        elif i > 0 and j > 0:
+            ca[i, j] = max(min(calculate(i - 1, j),
+                               calculate(i - 1, j - 1),
+                               calculate(i, j - 1)), d)
+        else:
+            ca[i, j] = np.infty
+
+        return ca[i, j]
+    return calculate(m - 1, n - 1)
+
+
+
 
 def GetLZPCausality(X, Y):
     return 1 if ETC.CCM_causality(X, Y)['LZP_cause'] == 'x' else 0
@@ -170,6 +210,8 @@ def GetLZPCausalityParallel(XYTuple):
 def _euclideanDistance(note1, dur1, meas1, note2, dur2, meas2):
     return np.sqrt((note2 - note1)**2 + (dur2 - dur1)**2 + (meas2-meas1)**2)
 
+def _euclideanDistance2d(A, B):
+    return np.sqrt((A[0] - B[0])**2 + (A[1] - B[1])**2)
 
 def GetDistanceMeasures(arrs, rest_pruner=None, adder=36):
     LCSMatrix = np.zeros((len(arrs), len(arrs)))
@@ -225,8 +267,28 @@ def GetCausalityMetrics(adjusted_melodies):
 
     return ETCE, ETCP, LZP
 
-
+import data
 if __name__ == '__main__':
-    X = ETC.generate(size=5, partitions=2)
-    Y = ETC.generate(size=8, partitions=2)
-    print(dtwDist(X, Y, 5, 8))
+    X = data.PruneRestsMultiAxis(data.GetSongCoords2d(data.PAHI_RAMACHANDRA), note_axis=1)
+    Y = data.PruneRestsMultiAxis(data.GetSongCoords2d(data.SYAMALE_MEENAKSHI), note_axis=1)
+    Z = data.PruneRestsMultiAxis(data.GetSongCoords2d(data.MOZART_THEME), note_axis=1)
+    W = data.PruneRestsMultiAxis(data.GetSongCoords2d(data.MOZART_VARIATION5), note_axis=1)
+    V = data.PruneRestsMultiAxis(data.GetSongCoords2d(data.AH_VOUS_ORIGINAL), note_axis=1)
+    print("DTW Distance between Pahi and Syamale: {}".format(dtwEuclidean(X, Y)))
+    print("DTW Distance between Pahi and Mozart: {}".format(dtwEuclidean(X, Z)))
+    print("DTW Distance between Syamale and Mozart: {}".format(dtwEuclidean(Y, Z)))
+    print("Frechet Distance between Pahi and Syamale: {}".format(frechetEuclidean(X, Y)))
+    print("Frechet Distance between Pahi and Mozart: {}".format(frechetEuclidean(X, Z)))
+    print("Frechet Distance between Pahi and Ah Vous: {}".format(frechetEuclidean(X, V)))
+    print("Frechet Distance between Syamale and Mozart: {}".format(frechetEuclidean(Y, Z)))
+    print("Frechet Distance between Syamale and Ah Vous: {}".format(frechetEuclidean(Y, V)))
+    print("Frechet Distance between Pahi and Mozart5: {}".format(frechetEuclidean(X, W)))
+    print("Frechet Distance between Syamale and Mozart5: {}".format(frechetEuclidean(Y, W)))
+    print("Frechet Distance between MOZART and Mozart5: {}".format(frechetEuclidean(Z, W)))
+    print("Frechet Distance between MOZART and Ah vous: {}".format(frechetEuclidean(Z, V)))
+
+    X = data.xtractAxes(X)
+    Y = data.xtractAxes(Y)
+    X[0] = X[0][0:len(Y[0])]
+    X[1] = X[1][0:len(Y[1])]
+    print(similaritymeasures.frechet_dist(X, Y))

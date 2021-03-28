@@ -1,6 +1,6 @@
 import multiprocessing
 import numpy as np
-from itertools import product
+from itertools import product, combinations
 
 
 def list_parallelizer(target, list):
@@ -21,10 +21,15 @@ def list_parallelizer(target, list):
 
 if __name__ == '__main__':
     n_eles = 8
-    n_processes = n_eles * n_eles#len(list(combinations(np.arange(n_eles), 2)))
-    # for i in range(n_processes):
-    #     print(i//n_eles, i % n_eles)
-    print(list(product(np.arange(n_eles), repeat=2)))
+    n_processes = len(list(combinations(np.arange(n_eles), 2)))
+    l = []
+    for i in range(n_eles):
+        for j in range(i, n_eles):
+            if i != j:
+                print(i, j)
+                l.append((i//n_eles, i % n_eles))
+    # l = list(product(np.arange(n_eles), repeat=2))
+    print(n_processes, len(l))
     print(multiprocessing.cpu_count())
     # lists = []
     # process_lists = []
