@@ -635,6 +635,8 @@ def xtractAxes(tupList):
             retval[i].append(item[i])
     return retval
 
+from utils.player import Player
+
 if __name__ == '__main__':
     # print("min dur: {}".format(get_least_duration()))
     # print("names: {}".format(GetLabels()))
@@ -667,4 +669,9 @@ if __name__ == '__main__':
     # ax.set_title("Syamale Meenakshi(black) vs Pahi Ramchandra(red)")
     # plt.show()
     # print(GetEuclideanData(AH_VOUS_ORIGINAL, 4, 1)[0])
-    print(xtractAxes(GetSongCoords2d(SYAMALE_MEENAKSHI)))
+    # print(xtractAxes(GetSongCoords2d(SYAMALE_MEENAKSHI)))
+    p = Player(SYAMALE_MEENAKSHI, "syamale")
+    p1 = Player(AH_VOUS_ORIGINAL, "ah_orig")
+    p2 = Player(MOZART_THEME, "ah_moz")
+    p3 = Player(MOZART_VARIATION5, "moz_5")
+    p4 = Player(GOOSEY_GOOSEY_GANDER, "goose")
