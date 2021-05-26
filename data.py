@@ -558,20 +558,20 @@ def compute_adjusted_melody():
         for dur, mel in zip(dict["int_durations"], dict["melody"]):
             for i in range(dur):
                 dict["adjusted_melody"].append(mel)
-
+import numpy as np
 def GetAdjustedMelody(euclideanData):
     ret = []
     for ele in euclideanData:
         int_duration = math.ceil(ele[2] * 480)
         if ele[1] < 99999:
             for i in range(int_duration):
-                ret.append(ele[1] + 21)
-    return ret
+                ret.append(ele[1] + 36)
+    return np.array(ret, dtype='int64')
 
 def PruneRests(arr):
     final = []
     for ele in arr:
-        if not ele >= 99999:
+        if not ele >= 9999:
             final.append(ele)
     return final
 

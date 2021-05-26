@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.io.wavfile import write
-
+import math
 
 F_s = 44100
 N_s = 44100
@@ -8,6 +8,8 @@ omega = 440
 
 centre_freq = 256
 default_length = 44100
+
+BASE_PATH = "/home/abhisheknandekar/audio"
 
 def get_freq_after_x_semitones(x=1, init_freq=256):
     return init_freq * (2 ** (float(x) / 12))
@@ -21,22 +23,21 @@ def save_to_pcm(wave, name='test.wav'):
     write(name, F_s, scaled)
 
 class Player():
-    def __init__(self, song_coords3d, label='default'):
+    def __init__(self,  label='default', note_len=default_length, cen_freq=centre_freq):
         self.rest = 99999
         self.scale = 12
-        self.centre_freq = centre_freq
-        self.note_length = default_length
+        self.centre_freq = cen_freq
+        self.note_length = note_len
         self.f_s = F_s
-        self.song_coords = song_coords3d
         self.song_length = -1
         self.name = label
-        self.compute_variables()
+        # self.compute_variables()
 
 
-    def compute_variables(self):
+    def compute_variables(self, song_coords3d):
         t = []
         a = []
-        for note, dur in zip(self.song_coords["melody"], self.song_coords["durations"]):
+        for note, dur in zip(song_coords3d["melody"], song_coords3d["durations"]):
             freq = get_freq_after_x_semitones(note) if note < 99999 else get_freq_after_x_semitones(0, init_freq=0)
             event_dur = int(dur * self.note_length)
 
@@ -46,6 +47,39 @@ class Player():
             print(len(a), len(t), t[0], t[-1])
         a = np.array(a, dtype='float64')
         save_to_pcm(a, '{}.wav'.format(self.name))
+
+    def SaveToWAV(self, song_Coords, path=BASE_PATH):
+        t = []
+        a = []
+        if len(song_Coords[0]) == 2:
+            for i in range(len(song_Coords)):
+                e = song_Coords[i]
+                e1 = song_Coords[(i + 1) % len(song_Coords)]
+                freq = get_freq_after_x_semitones(e[1]) if e[1] < 99999 else get_freq_after_x_semitones(0, init_freq=0)
+                event_dur = int((e[0] - math.floor(e[0])) * self.note_length)
+                if event_dur == 0:
+                    event_dur = int((e1[0] - e[0]) * self.note_length)
+                print('event duration: {}, frequency: {}'.format(event_dur, freq))
+                wav = get_sine_wave(freq, t_start=len(t), t_end=len(t) + event_dur) if e[1] < 99999 else get_sine_wave(0, t_start=len(t), t_end=len(t) + event_dur)
+                t += list(np.arange(len(t), len(t) + event_dur))
+                a += list(wav)
+                print(len(a), len(t), t[0], t[-1])
+        elif len(song_Coords[0]) == 3:
+            for i in range(len(song_Coords)):
+                e = song_Coords[i]
+                freq = get_freq_after_x_semitones(e[1]) if e[1] < 99999 else get_freq_after_x_semitones(0, init_freq=0)
+                event_dur = int(e[2] * self.note_length)
+                print('event duration: {}, frequency: {}'.format(event_dur, freq))
+                wav = get_sine_wave(freq, t_start=len(t), t_end=len(t) + event_dur) if e[1] < 99999 else get_sine_wave(0, t_start=len(t), t_end=len(t) + event_dur)
+                t += list(np.arange(len(t), len(t) + event_dur))
+                a += list(wav)
+                print(len(a), len(t), t[0], t[-1])
+
+
+        a = np.array(a, dtype='float64')
+        save_to_pcm(a, path+'/'+'{}.wav'.format(self.name))
+
+
 
 
 

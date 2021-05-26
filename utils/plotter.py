@@ -51,10 +51,10 @@ def plot3d(x, y, z, xlabel, ylabel, zlabel, filename='song_3d'):
     # save
     plt.savefig(filename, bbox_inches='tight')
 
-def _handleRests(axis_data):
+def _handleRests(axis_data, default=np.nan):
     for i in range(len(axis_data)):
         if axis_data[i] > 9999:
-            axis_data[i] = np.nan
+            axis_data[i] = default
     return axis_data
 
 if __name__ == '__main__':

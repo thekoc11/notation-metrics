@@ -1,7 +1,7 @@
 import ETC
 from scipy.spatial.distance import hamming
 import numpy as np
-import similaritymeasures
+# import similaritymeasures
 
 def LCSubSeq(X, Y, m, n):
     """
@@ -291,4 +291,4 @@ if __name__ == '__main__':
     Y = data.xtractAxes(Y)
     X[0] = X[0][0:len(Y[0])]
     X[1] = X[1][0:len(Y[1])]
-    print(similaritymeasures.frechet_dist(X, Y))
+    # print(similaritymeasures.frechet_dist(X, Y))
