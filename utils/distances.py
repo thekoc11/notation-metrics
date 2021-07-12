@@ -254,18 +254,21 @@ def GetDistanceMeasures(arrs, rest_pruner=None, adder=36):
 
     return LCSMatrix, EDMatrix, EDNormMatrix, DTWMatrix, HDMatrix, dETCMatrix, Causility_Matrix, Causility_Matrix_LZ, Causility_Matrix_ETCP
 
-def GetCausalityMetrics(adjusted_melodies):
-    ETCE = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))
-    ETCP = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))
+def GetCausalityMetrics(adjusted_melodies, *args):
+    ETCE = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))  if 'ETCE' in args else None
+
+    ETCP = np.zeros((len(adjusted_melodies), len(adjusted_melodies))) if 'ETCP' in args else None
     LZP = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))
 
     for i in range(len(adjusted_melodies)):
         for j in range(len(adjusted_melodies)):
-            ETCE[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCE_cause'] == 'x' else 0
-            ETCP[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCP_cause'] == 'x' else 0
+            if ETCE is not None:
+                ETCE[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCE_cause'] == 'x' else 0
+            if ETCP is not None:
+                ETCP[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCP_cause'] == 'x' else 0
             LZP[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['LZP_cause'] == 'x' else 0
 
-    return ETCE, ETCP, LZP
+    return  LZP, ETCE, ETCP
 
 import data
 if __name__ == '__main__':
@@ -277,6 +280,8 @@ if __name__ == '__main__':
     print("DTW Distance between Pahi and Syamale: {}".format(dtwEuclidean(X, Y)))
     print("DTW Distance between Pahi and Mozart: {}".format(dtwEuclidean(X, Z)))
     print("DTW Distance between Syamale and Mozart: {}".format(dtwEuclidean(Y, Z)))
+    print("DTW Distance between Syamale and Ah Vous: {}".format(dtwEuclidean(Y, V)))
+    print("DTW Distance between Pahi and Ah Vous: {}".format(dtwEuclidean(X, V)))
     print("Frechet Distance between Pahi and Syamale: {}".format(frechetEuclidean(X, Y)))
     print("Frechet Distance between Pahi and Mozart: {}".format(frechetEuclidean(X, Z)))
     print("Frechet Distance between Pahi and Ah Vous: {}".format(frechetEuclidean(X, V)))

@@ -130,6 +130,7 @@ class NGramHolder:
         self.table = np.zeros((self.nrows, self.ncols), dtype='int64')
         self.totalPossibleTransitions = 0
         self.marginalProbs = []
+        self.stationary = np.zeros((self.ncols, self.ncols))
 
     def AddOrUpdate(self, key, value):
         if key not in self.keys:
@@ -146,7 +147,7 @@ class NGramHolder:
 
     def CalculateFreq(self, array):
         for i in range(len(array) - self.N):
-            key = array[i : i + self.N]
+            key = list(array[i : i + self.N])
             if len(key) == 1:
                 key = key[0]
             value = array[(i + self.N) % len(array)]
