@@ -37,7 +37,17 @@ class Player():
     def compute_variables(self, song_coords3d):
         t = []
         a = []
-        for note, dur in zip(song_coords3d["melody"], song_coords3d["durations"]):
+        if "melody" in song_coords3d.keys():
+            melody = song_coords3d["melody"]
+        else:
+            melody = song_coords3d[" Note"]
+
+        if "durations" in song_coords3d.keys():
+            durations = song_coords3d["durations"]
+        else:
+            durations = song_coords3d[" Duration"]
+
+        for note, dur in zip(melody, durations):
             freq = get_freq_after_x_semitones(note) if note < 99999 else get_freq_after_x_semitones(0, init_freq=0)
             event_dur = int(dur * self.note_length)
 

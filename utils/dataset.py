@@ -15,7 +15,7 @@ ragaId2Raga = {'22': 'Kharaharpriya', '22_a': 'Aabhogi',
 
 def findFiles(path): return glob.glob(path)
 
-BASE_PATH = "/home/abhisheknandekar/notations"
+BASE_PATH = "/home/efm-workstation/notations"
 
 
 class Dictionary(object):
@@ -65,6 +65,32 @@ def GetRagaSongCoords(ragaId, basePath=BASE_PATH):
             song_note.append(df_filtered.iloc[i, 1])
         song_coords = [song_meas, song_note, song_dur]
         coord_lists[name] = song_coords
+
+    return coord_lists
+def GetRagaSongCoordsDict(ragaId, basePath=BASE_PATH):
+    """
+
+    :param ragaId: The ID of the raga is the katapayadi sankhya of the melakarta or
+                   <katapayadi sankhya of the parent melakarta>_<initial alphabet of the janya>
+    :param basePath (optional): path where the compositions are stored. Leave default for now.
+    :return: The 3d data of every song
+    """
+    raga_path = os.path.join(basePath, str(ragaId))
+    coord_lists = []
+    for filename in findFiles('{}/*-parsed.txt'.format(raga_path)):
+        name = _getSongName(filename, ragaId)
+        df = pd.read_csv(filename)
+        df_filtered = df
+        song_coords = []
+        song_meas = []
+        song_dur = []
+        song_note = []
+        for i in range(len(df_filtered)):
+            song_meas.append(df_filtered.iloc[i, 0])
+            song_dur.append(df_filtered.iloc[i, 2])
+            song_note.append(df_filtered.iloc[i, 1])
+        song_coords = {"Measure": song_meas, " Note": song_note, " Duration": song_dur}
+        coord_lists.append(song_coords)
 
     return coord_lists
 
