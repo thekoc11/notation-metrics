@@ -132,7 +132,7 @@ def draw_causal_inference(dist_matrix, data_labels=labels, mela="Mayamalavagowla
 
     for i in range(len(data_labels)):
         if mela in  data_labels[i] or "Mayamalavgowla" in data_labels[i]:
-            G.get_node(curr_labels[i]).attr["color"] = "grey"
+            G.get_node(curr_labels[i]).attr["color"] = "black"
             G.get_node(curr_labels[i]).attr["fontcolor"] = "white"
             G.get_node(curr_labels[i]).attr["style"] = "filled"
 

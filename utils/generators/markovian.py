@@ -59,13 +59,6 @@ def GenerateForRaga(ragaId='22', num_comps=10, comp_length=1000, serial=False):
         else:
             finalEvList = finalEvList.Add(l1)
 
-    # print(finalList.classFreqs)
-    # print(finalList.classes)
-    # print(len(finalList), len(finalList.classes), len(finalList.classFreqs))
-
-    # unigram = dataStructures.NGramHolder(finalList.classes, 2)
-    # unigram.CalculateFreq(finalList.List)
-    # Generate(unigram, finalList)
     unigram_notes = dataStructures.NGramHolder(finalEvList.classes[1], 1)
     unigram_notes.CalculateFreq(list(finalEvList.mainArray[1]))
     if serial:
@@ -77,7 +70,6 @@ def GenerateForRaga(ragaId='22', num_comps=10, comp_length=1000, serial=False):
         parallelizer.UniformConcurrentExecutor(_generationAtom, [0, unigram_notes, finalEvList, ragaId, retVal], comp_length)
 
     return retVal
-    # Generate(unigram_dur, finalList)
 
 def _generationAtom(thread_idx, unigram_notes, final_ev_list, ragaId, ret_dict, comp_length=1000):
 
@@ -147,13 +139,27 @@ def Generate(NGram, eventlist, n_meas=200, start=None, talam=6):
 
         rg =  normal(i, candidate_ind, 1) / normal(candidate_ind, i, 1) #if unif_no < rest else 1
         accept_ratio = min(rf * rg, 1)
-        if conts > 3 and len(retVal) > 2:
-            retVal.pop(len(retVal) - 1)
-            start.pop(-1)
-            start.append(retVal[-1][1])
-            accepted -= 1
+        # if conts > 3 and len(retVal) >= 2:
+        #     retVal.pop(len(retVal) - 1)
+        #     start.pop(-1)
+        #     start.append(retVal[-1][1])
+        #     accepted -= 1
+        #     conts = 0
+        #     continue
+
+        if conts > 300:
+            """
+            In case the loop gets stuck due to the `if` statement immediately after this one (line 167), 
+            this condition chooses a previous candidate index in order to break the loop. 
+            Hack, but works 
+            """
+            ele = start.pop(-1)
+            if seven and ele > 7: start.append(ele - 7)
+            elif seven and ele < 0: start.append(ele + 7)
+            elif not seven and ele > 12: start.append(ele - 12)
+            elif not seven and ele < 0 : start.append(ele + 12)
+            else: start.append(ele)
             conts = 0
-            continue
 
         diff_cond = np.abs(NGram.currents[candidate_ind] - start[-1]) > 6 if seven else np.abs(NGram.currents[candidate_ind] - start[-1]) > 10
         if diff_cond and NGram.currents[candidate_ind] != 99999 and start[-1] != 99999:
@@ -165,31 +171,12 @@ def Generate(NGram, eventlist, n_meas=200, start=None, talam=6):
         currBeatLength += bl
 
         if np.ceil(currBeatLength) < nbeats or (nbeats - currBeatLength) > eps:
-            # if accept_ratio == 1 and NGram.table[i, candidate_ind] > 0:
             retVal.append((curr_meas, NGram.currents[candidate_ind], bl))
             accepted += 1
-            # pbar.update(1)
-            # elif   NGram.table[i, candidate_ind] > 0 and accept_ratio >= unif_no:
-            #     retVal.append((curr_meas, NGram.currents[candidate_ind], bl))
-            #     accepted += 1
-            # elif accept_ratio < unif_no and NGram.table[i, i] > 0:
-            #     retVal.append((curr_meas, NGram.currents[i], bl))
-            #     accepted += 1
-            #     start.pop(-1)
-            #     start.append(NGram.currents[i])
+
         elif np.abs(nbeats - currBeatLength) <= eps:
-            # if accept_ratio == 1 and NGram.table[i, candidate_ind] > 0:
             retVal.append((curr_meas, NGram.currents[candidate_ind], bl))
             accepted += 1
-            # pbar.update(1)
-            # elif  NGram.table[i, candidate_ind] > 0 and accept_ratio >= unif_no:
-            #     retVal.append((curr_meas, NGram.currents[candidate_ind], bl))
-            #     accepted += 1
-            # elif accept_ratio < unif_no and NGram.table[i, i] > 0:
-            #     retVal.append((curr_meas, NGram.currents[i], bl))
-            #     accepted += 1
-            #     start.pop(-1)
-            #     start.append(NGram.currents[i])
             currBeatLength = 0
             curr_meas += 1
         else:

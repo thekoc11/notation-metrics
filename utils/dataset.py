@@ -5,7 +5,7 @@ import glob
 import data
 from io import open
 from utils import dataStructures
-ragaId2Raga = {'22': 'Kharaharpriya', '22_a': 'Aabhogi',
+ragaId2Raga = {'22': 'Kharaharpriya', '22_a': 'Abhogi',
                '29': 'Shankarabharanam', '29_h': 'Hamsadhwani',
                '15': 'Mayamalavagowla', '15_m': 'Malahari',
                '8': 'Hanumatodi', '8_d': 'Dhanyaasi',
@@ -151,7 +151,7 @@ def ConcatenateDicts(*args):
             retDict.update(args[i])
         return retDict
 
-def GetAdjustedMelodies(d, unif=True, pre_min_len=None):
+def GetAdjustedMelodies(d, normalise_length=True, pre_min_len=None):
     """
 
     :param d: Expected to be a dictionary, the output of @GetRagaSongCoords or @GetRagaSongCoordsConcat
@@ -163,13 +163,20 @@ def GetAdjustedMelodies(d, unif=True, pre_min_len=None):
         adj_mel = data.GetAdjustedMelody(val)
         # print("{}: {}".format(key, len(adj_mel)))
         ret_dict[key] = adj_mel
-    if unif:
+    #
+    # for key in ret_dict.keys():
+    #     print("{}:  length: {}".format(key, len(ret_dict[key])))
+
+    if normalise_length:
         list_lens = [len(i) for i in list(ret_dict.values())]
         min_len = np.min(list_lens) if pre_min_len is None else pre_min_len
         indices = [np.random.randint(0, i - min_len + 1, 1)[0] for i in list_lens]
         for i, (key, val) in enumerate(ret_dict.items()):
             ret_dict[key] = ret_dict[key][indices[i]:indices[i] + min_len]
             # print("{}: Start: {}, end: {}, length: {}".format(key, indices[i], indices[i] + min_len, len(ret_dict[key])))
+
+    # for key in ret_dict.keys():
+    #     print("{}:  length: {}".format(key, len(ret_dict[key])))
     return ret_dict
 
 def GetRagaSongCoordsConcat(*args):
@@ -234,7 +241,7 @@ def GetAdjMelDictsConcat(*args, **kwargs):
     if 'min_len' in kwargs.keys():
         min_len = kwargs['min_len']
 
-    dictAdjMel = GetAdjustedMelodies(final_dict, unif=unif, pre_min_len=min_len)
+    dictAdjMel = GetAdjustedMelodies(final_dict, normalise_length=unif, pre_min_len=min_len)
 
     if unif:
         list_lens = [len(i) for i in list(dictAdjMel.values())]
@@ -243,8 +250,7 @@ def GetAdjMelDictsConcat(*args, **kwargs):
         for i, (key, val) in enumerate(dictAdjMel.items()):
             dictAdjMel[key] = dictAdjMel[key][indices[i]:indices[i]+min_len]
             # print("{}: Start: {}, end: {}, length: {}".format(key, indices[i], indices[i] + min_len, len(dictAdjMel[key])))
-    # for key in dictAdjMel.keys():
-        # print("{}:  length: {}".format(key, len(dictAdjMel[key])))
+    print(f"Final Value Chosen: {len(list(dictAdjMel.values())[0])}")
     return dictAdjMel
 
 def StandardisingRepeater(song_coords, stan_size=1500):
@@ -293,13 +299,13 @@ def StandardisingRepeater(song_coords, stan_size=1500):
 
 if __name__ == '__main__':
     from models import simpleVAE as sv
-
-    # dicts3d = GetRagaSongCoordsConcat('8', '8_d')
+    #
+    # dicts3d = GetRagaSongCoordsConcat('15', '15_m')
     # for key in dicts3d:
     #     print(key)
     # for key in dicts3d:
     #     dicts3d[key] = dataStructures.PackTuples(*dicts3d[key])
-    coords = GetAdjMelDictsConcat('29', '29_h', min_len=35000)
+    coords = GetAdjMelDictsConcat('15', '15_m')
     # d = GetAdjustedMelodies(dicts3d)
 
     # print(adjMelDicts.keys())

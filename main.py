@@ -36,7 +36,7 @@ def get_raga_event_list(dat):
 
 
 if __name__ == '__main__':
-    dat = dataset.GetRagaSongCoordsConcat('8_d')
+    dat = dataset.GetRagaSongCoordsConcat('8')
     iters = 0
     final_list = get_raga_event_list(dat)
 
@@ -44,7 +44,12 @@ if __name__ == '__main__':
     uni.CalculateFreq(final_list.mainArray[1])
     # dat1 = dataset.GetRagaSongCoords('28_k')
 
-    d_surr1 = markovian.GenerateForRaga('8_d', num_comps=50, comp_length=1000, serial=True)
+    # for _ in range(10):
+    #     print(f"iteration: {_}")
+    #     d_surr1 = markovian.GenerateForRaga('15_m', num_comps=100, comp_length=1000, serial=True)
+
+    d_surr1 = markovian.GenerateForRaga('8', num_comps=100, comp_length=1000, serial=True)
+
     finl_surr = get_raga_event_list(d_surr1)
     uni_surr = dataStructures.NGramHolder(finl_surr.classes[1], 1)
     uni_surr.CalculateFreq(finl_surr.mainArray[1])
@@ -77,7 +82,7 @@ if __name__ == '__main__':
     # print(uni.table.sum(), uni.totalPossibleTransitions)
     prob = np.array([e / e.sum() for e in uni.table])
     prob_surr = np.array([e / e.sum() for e in uni_surr.table])
-    nIters = 100
+    nIters = 40
     # # print(prob)
     new_prob = prob
     new_prob_surr = prob_surr
@@ -86,8 +91,8 @@ if __name__ == '__main__':
         new_prob_surr = np.matmul(prob_surr, new_prob_surr)
         if i == nIters - 2:
             new_prob_last = new_prob
-    pi = new_prob[-1] # final_list.classFreq[1] / final_list.classFreqSum[2]
-    pi_surr = new_prob_surr[-1] #finl_surr.classFreq[2] / finl_surr.classFreqSum[2]
+    pi =  final_list.classFreq[2] / final_list.classFreqSum[2] # new_prob[-1] #
+    pi_surr = finl_surr.classFreq[2] / finl_surr.classFreqSum[2] # new_prob_surr[-1] #
     print(pi)
     print(pi_surr)
     fig = plt.figure(figsize=(10, 10))
@@ -100,14 +105,20 @@ if __name__ == '__main__':
     # print(np.unique(Y, return_counts=True))
     # ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     # ax.hist(Y, bins=20)
-    ax.plot(pi, '-o')
+    ax.plot(pi, '-o', label='raga')
     pi_surr_plot = []
-    for i in range(len(final_list.classes[1])):
-        if final_list.classes[1][i] not in finl_surr.classes[1]:
+    for i in range(len(final_list.classes[2])):
+        if final_list.classes[2][i] not in finl_surr.classes[2]:
             pi_surr_plot.append(np.nan)
         else:
-            pi_surr_plot.append(pi_surr[list(finl_surr.classes[1]).index(final_list.classes[1][i])])
-    ax.plot(pi_surr_plot, '-o')
-    # ax.plot(finl_surr.classes[2], pi_surr, '-o')
+            pi_surr_plot.append(pi_surr[list(finl_surr.classes[2]).index(final_list.classes[2][i])])
+    ax.plot(pi_surr_plot, '-o', label='surrogate')
+
+    # ax.plot(final_list.classes[2], pi_surr_plot, '-o', label="raga")
+    # ax.plot(final_list.classes[2], pi, '-o', label="surrogate")
     ax.legend()
+    ax.yaxis.set_major_locator(MaxNLocator(3))
+    ax.xaxis.set_major_locator(MaxNLocator(3))
+    plt.xticks(fontsize=38)
+    plt.yticks(fontsize=38)
     plt.show()
