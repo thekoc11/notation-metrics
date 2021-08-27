@@ -1,6 +1,13 @@
 import numpy as np
 
 def PackTuples(*args):
+    """
+    returns the Hadamard composition of the arrays passed as arguments
+    :param args: arrays or lists of the same length; e.g. arg1 = [a1, b1, c1, d1], arg2 = [a2, b2, c2, d2],
+            arg3 = [a3, b3, c3, d3]
+    :return: A list of element-wise tuples of the input arrays. The result of the example given above will be:
+            return = [(a1, a2, a3), (b1, b2, b3), (c1, c2, c3), (d1, d2, d3)]
+    """
     l = len(args[0])
     for a in args:
         assert len(a) == l, "Length of all the argument arrays in not equal"
@@ -18,6 +25,13 @@ def PackTuples(*args):
     return retList
 
 def UnpackTuples(arr):
+    """
+    Takes an array of the form of @PackTuples() output, and returns it in the form of independent lists
+    :param arr: An array of tuples of equal size; For example, arr = [(a1, a2, a3), (b1, b2, b3), (c1, c2, c3), (d1, d2, d3)]
+    :return: Independent list that represents a series of every axis of the tuple. For the above given example, the output
+            will be return = [[a1, b1, c1, d1], [a2, b2, c2, d2],
+            [a3, b3, c3, d3]]
+    """
     l = [[] for _ in range(len(arr[0]))]
     for e in arr:
         for i in range(len(e)):
@@ -27,6 +41,10 @@ def UnpackTuples(arr):
 
 
 class EventList:
+    """
+    The @EventList class is a simple data structure that was built to represent a list of events in any number of dimensions.
+    namely, pitch index, event duration and measure/positional index.
+    """
     def __init__(self, arr):
         self.shape = arr.shape if isinstance(arr, np.ndarray) else []
         if len(self.shape) == 0:
@@ -37,7 +55,7 @@ class EventList:
         if isinstance(arr, np.ndarray):
             self.mainArray = arr
         else:
-            self.mainArray = np.array(arr) if self.dims < 2 else np.array([np.array(a) for a in arr])
+            self.mainArray = np.array(arr) if self.dims < 2 else np.array([np.array(a) for a in arr]) # assuming more than two dimensional arrays are never used
         self.classes = self._findclasses()
         self.classFreqSum = []
         self.classFreq = self._getClassFreq()
@@ -75,15 +93,15 @@ class EventList:
 
         return  freqs
 
-    def shapeRecursor(self, arr):
+    def shapeRecursor(self, arr): # handles the usage of Pythonic lists as well as numpy arrays
         if isinstance(arr, np.ndarray) or  isinstance(arr, list) or isinstance(arr, tuple):
             self.shapeRecursor(arr[0])
             self.shape.append(len(arr))
             return len(arr)
         else: return -1
 
+    # Coalesces the arguments (also EventLists) to the current EventList
     def Add(self, *args):
-
         arr = self.mainArray
         for l in args:
             assert isinstance(l, EventList)
@@ -91,7 +109,7 @@ class EventList:
             # print(arr.shape)
         return EventList(arr)
 
-class NoteEventList():
+class NoteEventList(): # Redundant to @EventList, I don't exactly remember why it was needed, but do remember that it serves a crucial purpose
     def __init__(self, arr):
         note, dur = arr[0]
         self.List = arr
@@ -121,6 +139,9 @@ class NoteEventList():
 
 
 class NGramHolder:
+    """
+    @NGramHolder, as name suggests, is a container for the Markov Chain representation of raga.
+    """
     def __init__(self, alphabet, n):
         self.nrows = int(pow(len(alphabet), n))
         self.ncols = len(alphabet)
@@ -169,42 +190,43 @@ class NGramHolder:
         # print(sum.sum())
         return matrix
 
-    def Generate(self, start=None, n_eles=1000):
-        if start is None:
-            ind = np.random.choice(np.arange(len(self.keys)))
-            start = self.keys[ind]
-        if self.N != 1:
-            retVal = [*start]
-        else:
-            retVal = [start]
-            start = [start]
-        accepted = 0
-        # new_probs_cum = np.zeros_like(new_probs)
-        # for i in range(len(new_probs_cum)):
-        #     if i == 0:
-        #         new_probs_cum[i] = new_probs[i]
-        #     else:
-        #         new_probs_cum[i] = new_probs[i] + new_probs_cum[i - 1]
-        # print(new_probs)
-        iters = 0
-        normal = lambda x, mu, sigma: (1 / sigma * np.sqrt(2 * np.pi)) * np.exp((-1 / 2) * ((x - mu) / sigma)**2)
-        while len(retVal) < n_eles:
-            sigma = 4
-            candidate_ind = int(np.floor(np.random.normal(self.keys.index(start), sigma)))
-            if candidate_ind >= len(self.currents) or candidate_ind < 0:
-                continue
-            prob = np.random.uniform(0, 1)
-            i = self.keys.index(start)
-            new_probs = self.table[i]
-            new_probs = new_probs.astype('float64') / new_probs.sum()
-            print("Current Selected Symbol: {}, Probability of Transition: {}".format(self.currents[candidate_ind], new_probs[candidate_ind]))
-            if new_probs[candidate_ind] >= prob:
-                retVal.append(int(self.currents[candidate_ind]))
-                start.append(int(self.currents[candidate_ind]))
-                start.pop(0)
-                accepted += 1
-            iters += 1
-        # print(retVal[700:720])
-        print("Acceptance rate: {}".format(accepted/iters * 100))
-
-
+    # Deprecated code for generating surrogates
+    # def Generate(self, start=None, n_eles=1000):
+    #     if start is None:
+    #         ind = np.random.choice(np.arange(len(self.keys)))
+    #         start = self.keys[ind]
+    #     if self.N != 1:
+    #         retVal = [*start]
+    #     else:
+    #         retVal = [start]
+    #         start = [start]
+    #     accepted = 0
+    #     # new_probs_cum = np.zeros_like(new_probs)
+    #     # for i in range(len(new_probs_cum)):
+    #     #     if i == 0:
+    #     #         new_probs_cum[i] = new_probs[i]
+    #     #     else:
+    #     #         new_probs_cum[i] = new_probs[i] + new_probs_cum[i - 1]
+    #     # print(new_probs)
+    #     iters = 0
+    #     normal = lambda x, mu, sigma: (1 / sigma * np.sqrt(2 * np.pi)) * np.exp((-1 / 2) * ((x - mu) / sigma)**2)
+    #     while len(retVal) < n_eles:
+    #         sigma = 4
+    #         candidate_ind = int(np.floor(np.random.normal(self.keys.index(start), sigma)))
+    #         if candidate_ind >= len(self.currents) or candidate_ind < 0:
+    #             continue
+    #         prob = np.random.uniform(0, 1)
+    #         i = self.keys.index(start)
+    #         new_probs = self.table[i]
+    #         new_probs = new_probs.astype('float64') / new_probs.sum()
+    #         print("Current Selected Symbol: {}, Probability of Transition: {}".format(self.currents[candidate_ind], new_probs[candidate_ind]))
+    #         if new_probs[candidate_ind] >= prob:
+    #             retVal.append(int(self.currents[candidate_ind]))
+    #             start.append(int(self.currents[candidate_ind]))
+    #             start.pop(0)
+    #             accepted += 1
+    #         iters += 1
+    #     # print(retVal[700:720])
+    #     print("Acceptance rate: {}".format(accepted/iters * 100))
+    #
+    #

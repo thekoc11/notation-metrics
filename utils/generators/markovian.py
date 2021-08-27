@@ -2,9 +2,11 @@ from utils import dataStructures, dataset, parallelizer
 import numpy as np
 from utils.gpu import matmul
 from tqdm import tqdm
+
 def weighted_sampling(weights):
     """
-    Weights are expected to be integers
+    Weighted sampling based on a given set of weights, which are passed as the argument.
+    Weights are expected to be integers. Visit https://peteroupc.github.io/randomfunc.html#General_Non_Uniform_Distributions for details
     """
 
 
@@ -29,18 +31,24 @@ def weighted_sampling(weights):
 
 
 def randomInversePowerOf2():
-
-    r = np.random.normal(2, 1)
+    r = np.random.normal(0, 1)
     while r < 0:
-        r = np.random.normal(2, 1)
+        r = np.random.normal(0, 1)
 
     return 2 ** (-np.floor(r))
 
 def GenerateForRaga(ragaId='22', num_comps=10, comp_length=1000, serial=False):
     """
-
+    Function for generating surrogate data for a given raga. This function primarily represents the raga as a Markov Chain,
+    computes the transitions matrices and other relevant stuff, and calls the extension function @Generate for final
+    generation.
+    :param ragaId: ID of the raga whose surrogates need to be generated
+    :param num_comps: Number of surrogate compositions to be generated
+    :param comp_length: Number of note-events in each composition
+    :param serial: Whether to run on single core or multiple cores.
+    :return: returns a Dictionary with strings of the patter "Surrogate{1....num_comps}" as keys and a bunch of 3-Tuples
+            as values
     """
-
     data = dataset.GetRagaSongCoords(ragaId)
     finalList = None
     finalEvList = None
@@ -81,7 +89,15 @@ def _generationAtom(thread_idx, unigram_notes, final_ev_list, ragaId, ret_dict, 
 
 def Generate(NGram, eventlist, n_meas=200, start=None, talam=6):
     """
-    :param:
+    Returns the final generated surrogates, one by one.
+    :param NGram: The transition matrix of the raga. For more details, visit
+                Chapter 3 of "Jurafsky, D., 2000. Speech & language processing. Pearson Education India."
+    :param eventlist: Conglomerated EventList of all the compositions in a given raga
+    :param n_meas: Number of measures to be generated
+    :param start: If it is preferable to start a surrogate composition with a specified pitch, it should be specified
+            here
+    :param talam: The total number of counts in every avartanam of the talam is specified here
+    :return: A list of 3-Tuples (measure index, pitch index, event duration) of length (n_meas * talam)
     """
     assert isinstance(NGram, dataStructures.NGramHolder)
     assert isinstance(eventlist, dataStructures.NoteEventList) or isinstance(eventlist, dataStructures.EventList)
@@ -210,26 +226,26 @@ def Generate(NGram, eventlist, n_meas=200, start=None, talam=6):
     return retVal
 
 
-
-if __name__ == '__main__':
-    P = np.zeros((3, 3), dtype='float64')
-    P[0, 0] = .6
-    P[0, 1]  = .1
-    P[0, 2] = .3
-    P[1, 0] = .1
-    P[1, 1] = .7
-    P[1, 2] = .2
-    P[2, 0] = .2
-    P[2, 1] = .2
-    P[2, 2] = .6
-
-    P_tmp = P
-    for _ in range(25):
-        P_tmp = np.matmul(P_tmp, P)
-        print(P_tmp)
-
-
-
+#
+# if __name__ == '__main__':
+#     P = np.zeros((3, 3), dtype='float64')
+#     P[0, 0] = .6
+#     P[0, 1]  = .1
+#     P[0, 2] = .3
+#     P[1, 0] = .1
+#     P[1, 1] = .7
+#     P[1, 2] = .2
+#     P[2, 0] = .2
+#     P[2, 1] = .2
+#     P[2, 2] = .6
+#
+#     P_tmp = P
+#     for _ in range(25):
+#         P_tmp = np.matmul(P_tmp, P)
+#         print(P_tmp)
+#
+#
+#
 
 
 

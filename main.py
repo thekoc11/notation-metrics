@@ -23,6 +23,7 @@ def OneOctave(note, tonal):
 def get_raga_event_list(dat):
     iters = 0
     final_list = None
+
     for k, v in dat.items():
         if isinstance(v[0], tuple):
             v = dataStructures.UnpackTuples(v)
@@ -36,7 +37,7 @@ def get_raga_event_list(dat):
 
 
 if __name__ == '__main__':
-    dat = dataset.GetRagaSongCoordsConcat('8')
+    dat = dataset.GetRagaSongCoordsConcat('15')
     iters = 0
     final_list = get_raga_event_list(dat)
 
@@ -48,7 +49,7 @@ if __name__ == '__main__':
     #     print(f"iteration: {_}")
     #     d_surr1 = markovian.GenerateForRaga('15_m', num_comps=100, comp_length=1000, serial=True)
 
-    d_surr1 = markovian.GenerateForRaga('8', num_comps=100, comp_length=1000, serial=True)
+    d_surr1 = markovian.GenerateForRaga('15', num_comps=100, comp_length=1000, serial=True)
 
     finl_surr = get_raga_event_list(d_surr1)
     uni_surr = dataStructures.NGramHolder(finl_surr.classes[1], 1)
@@ -105,14 +106,14 @@ if __name__ == '__main__':
     # print(np.unique(Y, return_counts=True))
     # ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     # ax.hist(Y, bins=20)
-    ax.plot(pi, '-o', label='raga')
+    ax.plot(final_list.classes[2], pi, '-o', label='raga')
     pi_surr_plot = []
     for i in range(len(final_list.classes[2])):
         if final_list.classes[2][i] not in finl_surr.classes[2]:
             pi_surr_plot.append(np.nan)
         else:
             pi_surr_plot.append(pi_surr[list(finl_surr.classes[2]).index(final_list.classes[2][i])])
-    ax.plot(pi_surr_plot, '-o', label='surrogate')
+    ax.plot(finl_surr.classes[2], pi_surr, '-o', label='surrogate')
 
     # ax.plot(final_list.classes[2], pi_surr_plot, '-o', label="raga")
     # ax.plot(final_list.classes[2], pi, '-o', label="surrogate")

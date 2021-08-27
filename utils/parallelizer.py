@@ -91,7 +91,7 @@ def sleepTest(thread_idx, nums, oper, ret_dict={}):
     ret_dict[thread_idx] = end
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # PooledProcessRunner(sleepTest, ([-1, -2, 3, 5, 7, 6, 4, 8], "+"))
     # n_eles = 8
     # n_processes = len(list(combinations(np.arange(n_eles), 2)))
@@ -105,8 +105,8 @@ if __name__ == '__main__':
     # print(multiprocessing.cpu_count())
     # lists = []
     # process_lists = []
-    d = {}
-    UniformConcurrentExecutor(sleepTest, [0, [-1, -2, 3, 5, 7, 4, 6, 8], "+", d])
+    # d = {}
+    # UniformConcurrentExecutor(sleepTest, [0, [-1, -2, 3, 5, 7, 4, 6, 8], "+", d])
     #
     # for i in range(24):
     #     n = np.random.randint(0, 26, 4)
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     # for p in process_lists:
     #     p.join()
 
-    print(d)
+    # print(d)
     #
     # p3.start()
     # p3.join()
