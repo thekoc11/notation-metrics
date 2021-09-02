@@ -1,16 +1,20 @@
 import os
 import time
-
 import numpy as np
 from utils import dataStructures, dataset, plotter, parallelizer
-from utils.gpu import matmul
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
-import ETC
 from utils.generators import markovian
 
 
 def OneOctave(note, tonal):
+    """
+    Returns an index of a term in the middle octave, depending upon a given value in the twelve or the seven-tonal
+    scales
+    :param note: The given value in the twelve or the seven tonal scale.
+    :param tonal: Specifies the scale of :param note. Valid values: {7, 12}
+    :return: return =
+    """
     if note < 0:
         return note + tonal
     elif note > (tonal - 1) and note < 9999:
@@ -24,6 +28,7 @@ def get_raga_event_list(dat):
     iters = 0
     final_list = None
 
+    #### TODO: need to make the following code more effecient
     for k, v in dat.items():
         if isinstance(v[0], tuple):
             v = dataStructures.UnpackTuples(v)
@@ -43,11 +48,6 @@ if __name__ == '__main__':
 
     uni = dataStructures.NGramHolder(final_list.classes[1], 1)
     uni.CalculateFreq(final_list.mainArray[1])
-    # dat1 = dataset.GetRagaSongCoords('28_k')
-
-    # for _ in range(10):
-    #     print(f"iteration: {_}")
-    #     d_surr1 = markovian.GenerateForRaga('15_m', num_comps=100, comp_length=1000, serial=True)
 
     d_surr1 = markovian.GenerateForRaga('15', num_comps=100, comp_length=1000, serial=True)
 
@@ -60,27 +60,6 @@ if __name__ == '__main__':
     print("generated dataset classes: ")
     print(finl_surr.classes[1])
 
-    # for key in dat:
-    #     dat[key] = dataStructures.PackTuples(*dat[key])
-
-    # for key in dat1:
-    #     dat1[key] = dataStructures.PackTuples(*dat1[key])
-    #
-    # d_fin1 = dataset.ConcatenateDicts(dat, d_surr1)#, dat1, d_surr2)
-    # adj = dataset.GetAdjustedMelodies(d_fin1)
-    # i1 = np.random.choice(list(adj.keys()))
-    # i2 = np.random.choice(list(adj.keys()))
-    #
-    # print(i1, i2)
-    # print(ETC.CCM_causality(adj[i1], adj[i2]))
-    # parallelizer.TrueLZPCausality_listParallel(list(adj.values()), list(adj.keys()), mela=dataset.GetRagaFromRagaId('28'))
-    # print(prob)
-    # uni_fil = dataStructures.NGramHolder(np.arange(7), 1)
-    # arr = np.vectorize(OneOctave)(final_list.mainArray[1], 7)
-    # arr = arr[~(np.isnan(arr))]
-    # uni_fil.CalculateFreq(arr)
-    # print(uni.table)
-    # print(uni.table.sum(), uni.totalPossibleTransitions)
     prob = np.array([e / e.sum() for e in uni.table])
     prob_surr = np.array([e / e.sum() for e in uni_surr.table])
     nIters = 40
@@ -99,13 +78,6 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(1, 1, 1)
 
-    # Y = np.zeros(10000)
-    # Y[0] = np.random.randint(20)
-    # for i in range(10000):
-    #     Y[i] = int(np.random.normal(Y[i - 1], 5))
-    # print(np.unique(Y, return_counts=True))
-    # ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    # ax.hist(Y, bins=20)
     ax.plot(final_list.classes[2], pi, '-o', label='raga')
     pi_surr_plot = []
     for i in range(len(final_list.classes[2])):

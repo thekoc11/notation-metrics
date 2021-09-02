@@ -5,7 +5,7 @@ import numpy as np
 
 def LCSubSeq(X, Y, m, n):
     """
-    Longest Common Subsequence
+    Longest Common Subsequence in X (of length m) and Y (of length n). Naturally, len(subsequence) <= min(m, n)
     """
     LCSuff = [[0 for k in range (n+1)] for l in range(m+1)]
     result = 0
@@ -110,8 +110,15 @@ def hammingDist(X, Y, m, n):
     return dist
 
 def dtwDist(X, Y, m, n):
+    """
+    Computes the Dynamic Time-Warping distance between two one-dimensional sequences
+    :param X: array_like
+    :param Y: array_like
+    :param m: length of X
+    :param n: length of Y
+    :return: int -> DTW distance between X and Y
+    """
     dtw = np.zeros((m + 1, n + 1), dtype='int64')
-    C = []
     for i in range(m + 1):
         for j in range(n + 1):
             dtw[i, j] = 99999
@@ -126,6 +133,15 @@ def dtwDist(X, Y, m, n):
     return dtw[m, n]
 
 def dtwDistSymbolic(X, Y, m, n):
+    """
+    Symbolic DTW computes a distance similar to DTW on symbols whose magnitudes can not be computed.
+    In this scenario, cost = 0 if X[i] == Y[j] else 1
+    :param X: array_like
+    :param Y: array_like
+    :param m: int -> length of X
+    :param n: int -> length of Y
+    :return: int -> comparative similarity between two symbolic sequences
+    """
     dtw = np.zeros((m + 1, n + 1), dtype='int64')
     C = []
     for i in range(m + 1):
@@ -143,18 +159,18 @@ def dtwDistSymbolic(X, Y, m, n):
 
 
 def dtwEuclidean(X, Y):
+    """
+    Euclidean DTW is able to compute DTW distance between two multidimensional arrays (assuming both have the same
+    dimensionality) by computing the euclidean distance between the individual elements.
+    Read More: https://en.wikipedia.org/wiki/Dynamic_time_warping
+    :param X: multidimensional array_like
+    :param Y: multidimensional array_like
+    :return: float64 -> DTW distance
+    """
     m = len(X)
     n = len(Y)
-    threeD = True
-    if len(X[0]) == 3 and len(Y[0])  == 3:
-        threeD = True
-    elif len(X[0]) == 2 and len(Y[0]) == 2:
-        threeD = False
-    else:
-        raise ValueError("Two/Three dimensional data expected. One or both of X and Y are not two/three dimensional, or that X.shape != Y.shape")
 
     dtw = np.zeros((m + 1, n + 1), dtype='float64')
-    C = []
     for i in range(m + 1):
         for j in range(n + 1):
             dtw[i, j] = 99999
@@ -162,16 +178,21 @@ def dtwEuclidean(X, Y):
 
     for i in range(1, m+1):
         for j in range(1, n + 1):
-            if threeD:
-                cost = _euclideanDistance(X[i-1][0], X[i-1][1], X[i-1][2], Y[j-1][0], Y[j-1][1], Y[j-1][2]) #0 if X[i - 1] == Y[j - 1] else 1
-            else:
-                cost = _euclideanDistance2d(X[i-1], Y[j-1])
+            cost = _euclideanDistance(X[i - 1], Y[j - 1]) #0 if X[i - 1] == Y[j - 1] else 1
             last_min = np.min([dtw[i, j-1], dtw[i - 1, j], dtw[i-1, j-1]])
             dtw[i, j] = cost  + last_min
     # print(dtw)
     return dtw[m, n]
 
 def frechetEuclidean(X, Y):
+    """
+    Euclidean Frechet is able to compute the Frechet distance between two multidimensional arrays
+    (assuming both have the same dimensionality) by computing the euclidean distance between the individual elements.
+    Read More: https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance
+    :param X: multidimensional array_like
+    :param Y: multidimensional array_like
+    :return: float64 -> Frechet distance
+    """
     m = len(X)
     n = len(Y)
     ca = np.zeros((m, n), dtype='float64')
@@ -181,7 +202,7 @@ def frechetEuclidean(X, Y):
         if ca[i, j] > -1.0:
             return ca[i, j]
 
-        d = _euclideanDistance2d(X[i], Y[j])
+        d = _euclideanDistance(X[i], Y[j])
         if i == 0 and j == 0:
             ca[i, j] = d
         elif i > 0 and j == 0:
@@ -202,18 +223,38 @@ def frechetEuclidean(X, Y):
 
 
 def GetLZPCausality(X, Y):
+    """
+    Utility function; uses ETC-Py to compute Compression Complexity Measure (CCM) Causality between :param X and Y
+    :param X: array_like: time-series sequence
+    :param Y: array_like: time-series sequence
+    :return: returns 1 if X -> Y, otherwise returns 0
+    """
     return 1 if ETC.CCM_causality(X, Y)['LZP_cause'] == 'x' else 0
 
-def GetLZPCausalityParallel(XYTuple):
-    return ETC.CCM_causality_parallel(XYTuple)
+def _euclideanDistance(A, B):
+    """
+    Computes the Euclidean Distance between two points represented in an n-dimensional space
+    :param A: array_like: Let A = (a_1, a_2, ..., a_n)
+    :param B: array_like: Let B = (b_1, b_2, ..., b_n)
+    :return: returns th Euclidean distance = sqrt((b_1 - a_1)**2 + (b_2 - a_2)**2 + ... + (b_n - a_n)**2)
+    """
+    if len(A) != len(B):
+        raise ValueError("A and B must have the same number of dimensions")
+    sqr_dist = 0
+    for i in range(len(A)):
+        sqr_dist += (A[i] - B[i])**2
+    return np.sqrt(sqr_dist)
 
-def _euclideanDistance(note1, dur1, meas1, note2, dur2, meas2):
-    return np.sqrt((note2 - note1)**2 + (dur2 - dur1)**2 + (meas2-meas1)**2)
-
-def _euclideanDistance2d(A, B):
-    return np.sqrt((A[0] - B[0])**2 + (A[1] - B[1])**2)
-
+#### TODO: Try to formulate a more efficient way to to this. This function acts like a dirty hack
 def GetDistanceMeasures(arrs, rest_pruner=None, adder=36):
+    """
+    Returns a Tuple of all the distances between pairs of elements in different arrays
+    :param arrs: The required arrays
+    :param rest_pruner: For some distance metrics (like @dtwDist()), it makes sense to prune off the 99999's of rests
+    :param adder: In case of melodies being passed in :param arrs, the default value transposes them by three octaves
+            (assuming they were parsed in a twelve tonal-scale), or 36 semitones.
+    :return: Tuple -> (LCS, ED, Normalised ED, DTW, HD, ETC)
+    """
     LCSMatrix = np.zeros((len(arrs), len(arrs)))
     EDMatrix = np.zeros((len(arrs), len(arrs)))
     EDNormMatrix = np.zeros((len(arrs), len(arrs)))
@@ -252,23 +293,26 @@ def GetDistanceMeasures(arrs, rest_pruner=None, adder=36):
         EDNormMatrix[i] = EDMatrix[i] / LCSMatrix[i][i]
 
 
-    return LCSMatrix, EDMatrix, EDNormMatrix, DTWMatrix, HDMatrix, dETCMatrix, Causility_Matrix, Causility_Matrix_LZ, Causility_Matrix_ETCP
+    return LCSMatrix, EDMatrix, EDNormMatrix, DTWMatrix, HDMatrix, dETCMatrix#, Causility_Matrix, Causility_Matrix_LZ, Causility_Matrix_ETCP
 
+# Deprecated
 def GetCausalityMetrics(adjusted_melodies, *args):
-    ETCE = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))  if 'ETCE' in args else None
-
-    ETCP = np.zeros((len(adjusted_melodies), len(adjusted_melodies))) if 'ETCP' in args else None
-    LZP = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))
-
-    for i in range(len(adjusted_melodies)):
-        for j in range(len(adjusted_melodies)):
-            if ETCE is not None:
-                ETCE[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCE_cause'] == 'x' else 0
-            if ETCP is not None:
-                ETCP[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCP_cause'] == 'x' else 0
-            LZP[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['LZP_cause'] == 'x' else 0
-
-    return  LZP, ETCE, ETCP
+    raise DeprecationWarning("This function is deprecated. Look at 'raga_surrogate_causality.ipynb' for a "
+                             "better alternative")
+    # ETCE = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))  if 'ETCE' in args else None
+    #
+    # ETCP = np.zeros((len(adjusted_melodies), len(adjusted_melodies))) if 'ETCP' in args else None
+    # LZP = np.zeros((len(adjusted_melodies), len(adjusted_melodies)))
+    #
+    # for i in range(len(adjusted_melodies)):
+    #     for j in range(len(adjusted_melodies)):
+    #         if ETCE is not None:
+    #             ETCE[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCE_cause'] == 'x' else 0
+    #         if ETCP is not None:
+    #             ETCP[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['ETCP_cause'] == 'x' else 0
+    #         LZP[i][j] = 1 if ETC.CCM_causality(adjusted_melodies[i], adjusted_melodies[j])['LZP_cause'] == 'x' else 0
+    #
+    # return  LZP, ETCE, ETCP
 
 import data
 if __name__ == '__main__':

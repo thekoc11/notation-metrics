@@ -1,4 +1,6 @@
 
+#### TODO: Define a more systematic way of manually parsing noatations, in case the use of auto-parser is not needed/infeasible
+
 AH_VOUS_ORIGINAL = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
 SYAMALE_MEENAKSHI = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
@@ -329,7 +331,7 @@ MOZART_VARIATION2["melody"] = [0, 0,
                                9, 5,
                                7, 4,
                                0, 2,
-                               2, -3] # TODO: Variation 2 incomplete
+                               2, -3]
 
 MOZART_VARIATION3 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 MOZART_VARIATION3["melody"] = [-12, -8, -5, 0, 4, 7,
@@ -359,7 +361,6 @@ MOZART_VARIATION3["beat_onset"] = [1, 0, 0, 0, 0, 0,
                                    1, 0]
 
 MOZART_VARIATION4 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
-#### TODO: Variation 4 incomplete
 
 MOZART_VARIATION5 = MOZART_VARIATION4
 MOZART_VARIATION5["melody"] = [0, 99999, 0,
@@ -390,7 +391,7 @@ MOZART_VARIATION5["beat_onset"] = [1, 0, 0,
 
 
 MOZART_VARIATION6 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
-#### TODO: VARIATION 6 incomplete
+
 
 
 MOZART_VARIATION7 = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
@@ -419,6 +420,8 @@ MOZART_VARIATION7["beat_onset"] = [1, 0, 0, 0, 0, 0, 0,
                                   1, 0, 0, 0, 0, 0, 0, 0,
                                   1, 0, 0, 0, 0, 0, 0, 0,
                                   1, 0]
+
+#### TODO: ALl the manually parsed compositions can be defined by a data class. The class may also cover the following methods
 
 def GetAll():
     return [AH_VOUS_ORIGINAL, SYAMALE_MEENAKSHI, PAHI_RAMACHANDRA, TWINKLE_TWINKLE, GOOSEY_GOOSEY_GANDER,  MOZART_THEME, MOZART_VARIATION1, MOZART_VARIATION3, MOZART_VARIATION5, MOZART_VARIATION7]
@@ -558,6 +561,7 @@ def compute_adjusted_melody():
         for dur, mel in zip(dict["int_durations"], dict["melody"]):
             for i in range(dur):
                 dict["adjusted_melody"].append(mel)
+
 import numpy as np
 def GetAdjustedMelody(euclideanData):
     ret = []
@@ -567,20 +571,6 @@ def GetAdjustedMelody(euclideanData):
             for i in range(int_duration):
                 ret.append(ele[1] + 36)
     return np.array(ret, dtype='int64')
-
-def PruneRests(arr):
-    final = []
-    for ele in arr:
-        if not ele >= 9999:
-            final.append(ele)
-    return final
-
-def PruneRestsMultiAxis(coords, note_axis=0):
-    new_arr = []
-    for c in coords:
-        if c[note_axis] < 99999:
-            new_arr.append(c)
-    return new_arr
 
 def GetSevenScale(arr, scale="mayamalavagowla"):
     # Raga Mayamalavagowla
@@ -605,8 +595,7 @@ def GetSevenScale(arr, scale="mayamalavagowla"):
 
     return new_arr
 
-def ConvertToSeven(melody):
-    twelve2seven = {0: 0, 2: 1, 4: 2, 5: 3, 7: 4, 9: 5, 11: 6}
+
 
 def GetSongCoords2d(coords3d):
     measures = -1
@@ -624,6 +613,28 @@ def GetSongCoords2d(coords3d):
         retVal.append((x, y))
     return retVal
 
+
+############################ DEPRECATED FUNCTIONS ######################################################################
+
+# Deprecated: DO NOT USE! use utils.plotter.handleRests() or fabricate something similar to that
+def PruneRests(arr):
+    final = []
+    for ele in arr:
+        if not ele >= 9999:
+            final.append(ele)
+    return final
+
+# Deprecated: DO NOT USE! use utils.plotter.handleRests() or fabricate something similar to that
+def PruneRestsMultiAxis(coords, note_axis=0):
+    new_arr = []
+    for c in coords:
+        if c[note_axis] < 99999:
+            new_arr.append(c)
+    return new_arr
+
+
+
+# Deprecated: Use utils.dataStructures.UnpackTuples() instead
 def xtractAxes(tupList):
     size = len(tupList[0])
     retval = []

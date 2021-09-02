@@ -2,6 +2,9 @@ import numpy as np
 from scipy.io.wavfile import write
 import math
 
+# Blackbox script; use the Player class to save the parsed notations as audio recordings. refer @melody_gen.ipynb
+# for usage
+
 F_s = 44100
 N_s = 44100
 omega = 440
@@ -9,7 +12,7 @@ omega = 440
 centre_freq = 256
 default_length = 44100
 
-BASE_PATH = "/home/abhisheknandekar/audio"
+BASE_PATH = "/home/efm-workstation/audio"
 
 def get_freq_after_x_semitones(x=1, init_freq=256):
     return init_freq * (2 ** (float(x) / 12))

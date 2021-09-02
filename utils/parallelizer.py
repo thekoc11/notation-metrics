@@ -8,6 +8,13 @@ import concurrent.futures
 import threading
 
 def list_parallelizer(target, list):
+    """
+    Runs :param target(ele1, ele2), where ele1 and ele2 are from :param list, for all possible combinations of ele1 and
+    ele2
+    :param target: Function to be run
+    :param list: Element provider
+    :return: A distance matrix
+    """
     n_thrs = len(list) * len(list)
     pairs = []
     for i in range(n_thrs):
@@ -16,6 +23,7 @@ def list_parallelizer(target, list):
     p = multiprocessing.Pool()
     res = p.starmap(target, product(list, repeat=2))
 
+    ### TODO: this should not technically be a part of this function.
     dist = np.zeros((len(list), len(list)))
     for i in range(len(list)):
         for j in range(len(list)):
@@ -23,6 +31,19 @@ def list_parallelizer(target, list):
     return dist
 
 def TrueLZPCausality_listParallel(list, labels, mela):
+    """
+    Returns the CCM Causality inference for a list of sequences. Parallelised for faster processing
+    :param list: The list of time series
+    :param labels: The corresponding labels
+    :param mela: Essentially a binary divider, helps differentiate between the pair of sequences being compared,
+                helps design a binary pair
+    :return: Tuple -> (true Causes, total connections, causal strengths), where,
+                        true causes: if the causal direction is as expected, then it is a true cause
+                        total cause: total number of combinations of selecting one sequence each from two distinct
+                                        classes
+                        causal strengths: Once the direction of the causality states is found, causal strengths is an
+                                    array_like that stores the magnitude of the causality
+    """
     p = multiprocessing.Pool()
     res = p.starmap(ETC.CCM_causality, combinations(list, r=2))
     iter = 0
@@ -50,6 +71,13 @@ def TrueLZPCausality_listParallel(list, labels, mela):
     return true_causes, total_causes, strengths
 
 def PooledProcessRunner(target, args, n=24):
+    """
+    ProcessPoolExecutor is a newer and more optimized way o run concurrent processes in modern Python.
+    :param target: target function
+    :param args: target function args
+    :param n: number of processes
+    :return: None: prints the results of :param target(:param args)
+    """
     with concurrent.futures.ProcessPoolExecutor() as executor:
         pool = [executor.submit(target, *args) for _ in range(n)]
         for i in concurrent.futures.as_completed(pool):
@@ -60,8 +88,8 @@ def UniformConcurrentExecutor(target, args, n_threads=24):
     Runs the function :param target with :param args concurrently in :param n_threads threads
 
     :param args: should be a list of all the args needed by :param target. The first element should be a dummy value,
-                    which will get replaced by the thread index it is running on. Should also contain a dictionary which will
-                    collect the resultant values
+                    which will get replaced by the thread index it is running on. Should also contain a dictionary which
+                    will collect the resultant values
     """
     threads = []
     for i in range(n_threads):

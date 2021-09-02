@@ -7,6 +7,7 @@ import networkx as nx
 import matplotlib as mpl
 import pygraphviz as pgv
 
+# Deprecated: GraphViz prove to be more flexible for my purposes.
 def draw_netwrokx_shit():
     seed = 32767 # Seed random number generators for reproducibility
     G = nx.random_k_out_graph(10, 3, 0.5, seed=seed)
@@ -41,8 +42,10 @@ def draw_netwrokx_shit():
     ax = plt.gca()
     ax.set_axis_off()
     plt.show()
+    raise DeprecationWarning("This function is deprecated. Rework necessary if the use of NetworkX is absolutely needed")
 
 
+### Global Variables, set for tests and reproducibility. DO NOT INVOKE THEM FROM OUTSIDE OF THIS SCRIPT!!
 # data.compute_adjusted_melody()
 labels = data.GetLabels()[0:6]
 # dicts = data.GetAll()[0:6]
@@ -50,6 +53,7 @@ labels = data.GetLabels()[0:6]
 # for dic in dicts:
 #     adjusted_melodies.append(dic["adjusted_melody"])
 
+# Deprecated
 def draw_causal_inference_networkx(dist_matrix, data_labels=labels, seed=13448):
     G = nx.DiGraph()
     num_labels = [i for i in range(len(data_labels))]
@@ -76,15 +80,28 @@ def draw_causal_inference_networkx(dist_matrix, data_labels=labels, seed=13448):
     ax.collections[0].set_edgecolor('#000fff')
     ax.set_axis_off()
     plt.show()
+    raise DeprecationWarning("This function is deprecated. Rework necessary if the use of NetworkX is absolutely needed")
 
-
-def draw_weighted_graph(dist_matrix, pivot=400, data_labels=labels):
+def draw_weighted_graph(dist_matrix, pivot=400, data_labels=labels, pivot_max=True):
+    """
+    Returns a GraphViz code for drawing an undirected graph, with edge weights specified.
+    :param dist_matrix: Distance matrix used for specifying the edges of the graph
+    :param pivot: Pivot edge weight; everything above (or below) the pivot is displayed as a dotted line
+    :param data_labels: The node names in the graph
+    :param pivot_max: bool -> if true, it means that the specified pivot is the maximum threshold (i. e. everything
+                    greater in magnitude than the pivot will be dotted), otherwise, it is considered as the minimum
+                    threshold.
+    :return: String -> prints a String that can be tested directly on https://dreampuf.github.io/GraphvizOnline/
+    """
     G = pgv.AGraph(directed=False, strict=False)
     G.add_nodes_from(data_labels)
     for i in range(len(dist_matrix)):
         for j in range(i, len(dist_matrix)):
             if i != j and dist_matrix[i, j] > 0:
-                style = 'solid' if dist_matrix[i, j] < pivot else 'dotted'
+                if pivot_max:
+                    style = 'solid' if dist_matrix[i, j] < pivot else 'dotted'
+                else:
+                    style = 'solid' if dist_matrix[i, j] > pivot else 'dotted'
                 G.add_edge(data_labels[i], data_labels[j], weight=dist_matrix[i, j]/1000, label=dist_matrix[i, j], style=style)
 
     M = G.number_of_edges()
@@ -93,23 +110,47 @@ def draw_weighted_graph(dist_matrix, pivot=400, data_labels=labels):
     edge_alphas = [(5 + i) / (M + 4) for i in range(M)]
     G.layout('dot')
     print(G.string())
-def draw_directed_graph(dist_matrix, pivot = 0.66):
+
+
+def draw_directed_graph(dist_matrix, pivot=0.66, data_labels=labels, pivot_max=True):
+    """
+    Returns a GraphViz code for drawing a directed graph, without edge weights.
+    :param dist_matrix: Distance matrix used for specifying the edges of the graph
+    :param pivot: Pivot edge weight; everything above (or below) the pivot is displayed as a dotted line
+    :param data_labels: The node names in the graph
+    :param pivot_max: bool -> if true, it means that the specified pivot is the maximum threshold (i. e. everything
+                    greater in magnitude than the pivot will be dotted), otherwise, it is considered as the minimum
+                    threshold.
+    :return: String -> prints a String that can be tested directly on https://dreampuf.github.io/GraphvizOnline/
+    """
     G = pgv.AGraph(directed=True, strict=False, rankdir="TD")
-    G.add_nodes_from(labels)
+    G.add_nodes_from(data_labels)
     for i in range(len(dist_matrix)):
         for ii in range(len(dist_matrix[i])):
             if i!= ii and dist_matrix[i, ii] > 0:
-                style = 'solid' if dist_matrix[i, ii] < pivot else 'dotted'
+                style = 'solid' if dist_matrix[i, ii] < pivot and pivot_max else 'dotted'
+                # this is probably because I was working on the specific compositions listed in data.py.
+                ### TODO: Bypass/remove this hack completely
                 if (i == 1 and ii == 3) or (i == 2 and ii == 3) or (i == 3 and ii == 1) or (i == 3 and ii == 2):
                     pass
                 else:
-                    G.add_edge(labels[i], labels[ii], weight=dist_matrix[i, ii], label=dist_matrix[i, ii], style=style)
+                    G.add_edge(data_labels[i], data_labels[ii], weight=dist_matrix[i, ii], label=dist_matrix[i, ii], style=style)
                     if style == 'solid':
-                        print("{} -> {} : {}".format(labels[i], labels[ii], dist_matrix[i, ii]))
+                        print("{} -> {} : {}".format(labels[i], data_labels[ii], dist_matrix[i, ii]))
     G.layout("dot")
     print(G.string())
 
 def draw_causal_inference(dist_matrix, data_labels=labels, mela="Mayamalavagowla", janya=None, alt_labels=None):
+    """
+    Returns a GraphViz code for drawing a directed acyclic graph, without edge weights. This graph portrays the
+    Causal Inference being sent from the dist_matrix
+    :param dist_matrix: Distance matrix used for specifying the edges of the graph
+    :param data_labels: The node names in the graph
+    :param mela: Name of the Melakarta raga
+    :param janya: Name of the Janya raga
+    :param alt_labels:
+    :return:
+    """
     G = pgv.AGraph(directed=True, strict=False, rankdir="TD")
     graph_labels = []
     if janya is not None:
@@ -144,7 +185,7 @@ def draw_causal_inference(dist_matrix, data_labels=labels, mela="Mayamalavagowla
     G.layout("dot")
     print(G.string())
 
-
-if __name__ == '__main__':
-    list = ['a', 'b', 'c', 'd', 'e']
-    draw_netwrokx_shit()
+#
+# if __name__ == '__main__':
+#     list = ['a', 'b', 'c', 'd', 'e']
+#     draw_netwrokx_shit()

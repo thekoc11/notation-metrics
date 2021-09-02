@@ -18,22 +18,13 @@ def findFiles(path): return glob.glob(path)
 BASE_PATH = "/home/efm-workstation/notations"
 
 
-class Dictionary(object):
-    def __init__(self):
-        self.word2idx = {}
-        self.idx2word = []
-
-    def add_word(self, word):
-        if word not in self.word2idx:
-            self.idx2word.append(word)
-            self.word2idx[word] = len(self.idx2word) - 1
-        return self.word2idx[word]
-
-    def __len__(self):
-        return len(self.idx2word)
-
-
 def _getSongName(path, ragaId='22'):
+    """
+    Get the names of all the songs in a raga
+    :param path: path were songs are organised according to the ragaId
+    :param ragaId: refer @ragaId2Raga
+    :return: String -> a list of names of all the songs
+    """
     path_eles = os.path.basename(path)
     path_eles = path_eles.replace('-parsed.txt', '')
     if str(ragaId) in ragaId2Raga.keys():
@@ -138,6 +129,11 @@ def GetRagaFromRagaId(ragaid='22'):
     else: return None
 
 def ConcatenateDicts(*args):
+    """
+    Concatenates a variable number of dictionaries together
+    :param args: dictionaries
+    :return: a dict which contains key-value pairs of all the args. It is assumed that there will be no key collisions.
+    """
     if len(args) < 2:
         if len(args) == 1:
             return args[0]
@@ -155,6 +151,9 @@ def GetAdjustedMelodies(d, normalise_length=True, pre_min_len=None):
     """
 
     :param d: Expected to be a dictionary, the output of @GetRagaSongCoords or @GetRagaSongCoordsConcat
+    :param normalise_length: if true, and :param pre_min_len is set to None, then a contiguous array of length equal to
+    length of the smallest composition is added to the return dict.
+    :param pre_min_len: int -> a predefined length for the contiguous array to be added to the final dict
     :return: dictionary, whose keys are the same as the input (:param d), and values are the calculated
              adjusted melodies respectively
     """
@@ -163,13 +162,18 @@ def GetAdjustedMelodies(d, normalise_length=True, pre_min_len=None):
         adj_mel = data.GetAdjustedMelody(val)
         # print("{}: {}".format(key, len(adj_mel)))
         ret_dict[key] = adj_mel
-    #
+
+    # Uncomment the following for analysing the length of each composition in the dictionary
     # for key in ret_dict.keys():
     #     print("{}:  length: {}".format(key, len(ret_dict[key])))
+
+
 
     if normalise_length:
         list_lens = [len(i) for i in list(ret_dict.values())]
         min_len = np.min(list_lens) if pre_min_len is None else pre_min_len
+        if pre_min_len > min_len:
+            return ValueError("predefined minimum should be <= the minimum length composition of the set")
         indices = [np.random.randint(0, i - min_len + 1, 1)[0] for i in list_lens]
         for i, (key, val) in enumerate(ret_dict.items()):
             ret_dict[key] = ret_dict[key][indices[i]:indices[i] + min_len]
@@ -194,6 +198,9 @@ def GetRagaSongCoordsConcat(*args):
         if n_c < num_comps:
             num_comps = n_c
         dict_list.append(dict_r)
+
+    # The following can be uncommented if equal number of compositions should be selected from
+    # every raga in the dict_list
     # final_list = []
     # for dict_r in dict_list:
     #     # dict_r = GetRagaSongCoords(ragaId)
@@ -208,6 +215,20 @@ def GetRagaSongCoordsConcat(*args):
     return final_dict
 
 def GetRagaSongCoords2dConcat(*args):
+    """
+
+    :param args: String arguments, which are expected to be valid ragaIds
+    :return: a contiguous dictionary containing the adjusted euclidean data of all the compositions in the ragas
+    specified in :param args. The keys are the names of the compositions, while the values are the 2d data-lists.
+
+    For example, consider the following scenario:
+    dgM mnd dsn Snd dsn ||
+             ^
+    Then the 2d representation of the selected note ('s') is (0, (0 + 4/8)) = (0, 0.5),
+                                                                 (m)  (o)
+    where (m) is the measure index, and (o) is the onset time
+    (number of counts that have occurred before the current note) / (total number of counts in the avartanam)
+    """
     dict_list = []
     num_comps = 9999999
     for ragaid in args:
@@ -265,47 +286,15 @@ def StandardisingRepeater(song_coords, stan_size=1500):
 
 
 
-# def CreateSurrogateDataset(ragaId='22', basePath=BASE_PATH):
-#     raga_path = os.path.join(basePath, str(ragaId))
-#     orig_files = [ i for i in findFiles('{}/*'.format(raga_path)) if i not in findFiles('{}/*-parsed.txt'.format(raga_path))]
-#     vowels = ['A', 'a', 'e', 'E', 'I', 'i', 'O', 'o', 'U', 'u', '(', ')']
-#     nums = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-#     start_reading = False
-#     all_words = Dictionary()
-#     for filename in orig_files:
-#         with open(filename, 'r', encoding='utf8') as f:
-#             print('File {} opened:'.format(filename))
-#             for line in f:
-#                 if  '<END>' in line.split():
-#                     start_reading = False
-#                     pass
-#                 elif '<BEGIN>' in line.split():
-#                     start_reading = True
-#
-#                 if start_reading and '<BEGIN>' not in line.split():
-#                     words = line.split()
-#                     for word in words:
-#                         add_words = False
-#                         for letter in word:
-#                             if letter in vowels or letter in nums:
-#                                 add_words = False
-#                                 break
-#                             else: add_words = True
-#                         if add_words:
-#                             all_words.add_word(word)
-#
-#     return all_words
 
-
-if __name__ == '__main__':
-    from models import simpleVAE as sv
+# if __name__ == '__main__':
     #
     # dicts3d = GetRagaSongCoordsConcat('15', '15_m')
     # for key in dicts3d:
     #     print(key)
     # for key in dicts3d:
     #     dicts3d[key] = dataStructures.PackTuples(*dicts3d[key])
-    coords = GetAdjMelDictsConcat('15', '15_m')
+    # coords = GetAdjMelDictsConcat('15', '15_m')
     # d = GetAdjustedMelodies(dicts3d)
 
     # print(adjMelDicts.keys())

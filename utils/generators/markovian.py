@@ -1,6 +1,5 @@
 from utils import dataStructures, dataset, parallelizer
 import numpy as np
-from utils.gpu import matmul
 from tqdm import tqdm
 
 def weighted_sampling(weights):
@@ -155,13 +154,6 @@ def Generate(NGram, eventlist, n_meas=200, start=None, talam=6):
 
         rg =  normal(i, candidate_ind, 1) / normal(candidate_ind, i, 1) #if unif_no < rest else 1
         accept_ratio = min(rf * rg, 1)
-        # if conts > 3 and len(retVal) >= 2:
-        #     retVal.pop(len(retVal) - 1)
-        #     start.pop(-1)
-        #     start.append(retVal[-1][1])
-        #     accepted -= 1
-        #     conts = 0
-        #     continue
 
         if conts > 300:
             """
@@ -204,11 +196,11 @@ def Generate(NGram, eventlist, n_meas=200, start=None, talam=6):
         # print("Current Measure: {}, Note: {},  current beat: {}, iters: {}".format(curr_meas, NGram.currents[candidate_ind], currBeatLength, iters))
 
 
-
+    # Diagnostic Code
     # print(retVal[500:520])
-    seven_tonal = ['s', 'r', 'g', 'm', 'p', 'd', 'n', ';']
-    l = []
-    ev_list = retVal[700:720]
+    # seven_tonal = ['s', 'r', 'g', 'm', 'p', 'd', 'n', ';']
+    # l = []
+    # ev_list = retVal[700:720]
     # pbar.close()
     # for i in range(20):
     #     if int(ev_list[i][1]) > 9999:

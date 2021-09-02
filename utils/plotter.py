@@ -51,7 +51,13 @@ def plot3d(x, y, z, xlabel, ylabel, zlabel, filename='song_3d'):
     # save
     plt.savefig(filename, bbox_inches='tight')
 
-def _handleRests(axis_data, default=np.nan):
+def handleRests(axis_data, default=np.nan):
+    """
+    Converts rests in axis_data from 99999 to the given default value
+    :param axis_data: Melody (pitch index) data, where rests are denoted by 99999
+    :param default: set to NaN by default.
+    :return: :param axis_data with rests converted to NaNs
+    """
     for i in range(len(axis_data)):
         if axis_data[i] > 9999:
             axis_data[i] = default
@@ -62,10 +68,10 @@ if __name__ == '__main__':
     dat1 = data.xtractAxes(data.GetSongCoords2d(data.SYAMALE_MEENAKSHI))
     dat2 = data.xtractAxes(data.GetSongCoords2d(data.MOZART_THEME))
     dat3 = data.xtractAxes(data.GetSongCoords2d(data.AH_VOUS_ORIGINAL))
-    dat[1] = _handleRests(dat[1])
-    dat1[1] = _handleRests(dat1[1])
-    dat2[1] = _handleRests(dat2[1])
-    dat3[1] = _handleRests(dat3[1])
+    dat[1] = handleRests(dat[1])
+    dat1[1] = handleRests(dat1[1])
+    dat2[1] = handleRests(dat2[1])
+    dat3[1] = handleRests(dat3[1])
     plt.plot(dat[0], dat[1], '-o')
     plt.plot(dat1[0], dat1[1], '-o')
     plt.plot(dat2[0], dat2[1], '-o')

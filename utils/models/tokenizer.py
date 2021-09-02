@@ -1,7 +1,6 @@
 import os
 from io import open
 import torch
-from  ..dataset import Dictionary
 
 
 class Corpus(object):
