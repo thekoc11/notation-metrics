@@ -53,6 +53,9 @@ def GenerateForRaga(ragaId='22', num_comps=10, comp_length=1000, serial=False):
     finalEvList = None
     retVal = {}
 
+    if num_comps == 0:
+        return retVal
+
     for k, v in data.items():
         l = dataStructures.PackTuples(v[1], v[2])
         l = dataStructures.NoteEventList(l)

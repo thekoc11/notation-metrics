@@ -1,5 +1,5 @@
 
-#### TODO: Define a more systematic way of manually parsing noatations, in case the use of auto-parser is not needed/infeasible
+#### TODO: Define a more systematic way of manually parsing notations, in case the use of auto-parser is not needed/infeasible
 
 AH_VOUS_ORIGINAL = {"melody": [], "durations": [], "beat_onset": [], 'rests': []}
 
@@ -421,19 +421,34 @@ MOZART_VARIATION7["beat_onset"] = [1, 0, 0, 0, 0, 0, 0,
                                   1, 0, 0, 0, 0, 0, 0, 0,
                                   1, 0]
 
-#### TODO: ALl the manually parsed compositions can be defined by a data class. The class may also cover the following methods
+#### TODO: ALl the manually parsed compositions defined above should be encapsulated in a data class.
+#### The class may also cover the following methods as members
 
 def GetAll():
+    """
+    Get a list of parsed compositions. GetLabels() prints the corresponding labels
+    """
     return [AH_VOUS_ORIGINAL, SYAMALE_MEENAKSHI, PAHI_RAMACHANDRA, TWINKLE_TWINKLE, GOOSEY_GOOSEY_GANDER,  MOZART_THEME, MOZART_VARIATION1, MOZART_VARIATION3, MOZART_VARIATION5, MOZART_VARIATION7]
 
 def GetLabels():
+    """
+    returns, as a list, the labels for the compositions returned in GetAll()
+    """
     return ["Ah! vous dirai-je(1774)", "Shaymale Meenakshi(1905)", "Pahi Ramachandra(oral)", "The Star(1838)", "Goosey Goosey Gander(1784)",  "Ah! vous dirai-je(1785)", "Mozart-Variation 1(1785)", "Mozart-Variation 3(1785)", "Mozart-Variation 5(1785)", "Mozart-Variation 7(1785)"]
 
 def GetSignificantLabels():
+    """
+    returns, as a list, the labels for a subset of compositions in GetAll()
+    """
     return ["Ah! Vous Dirai-Je (1774)(celtic)", "Shaymale Meenakshi (1905)", "Pahi Ramachandra (Traditional)", "The Star (1838)(celtic)", "Goosey Goosey Gander (1784)(celtic)",  "Ah! Vous Dirai-Je(1785)(celtic)"]
 
 
 def GetMeasureData(dict):
+    """
+    Get a list of all the measures in a given composition. These measure
+    :param dict -> a Dictionary: The composition whose measure data is expected
+    :return lines -> list: a list of all the measures, containing the melody information at each measure
+    """
     lines = []
 
     iter = 0
@@ -456,6 +471,15 @@ def GetMeasureData(dict):
     return lines
 
 def GetEuclideanData(dict, n, start=1):
+    """
+    Converts the parsed data in :param dict to a 3D format, and returns that list
+    :param dict -> Dictionary: the parsed composition
+    :param n -> int/string: number of full measures to be parsed. The value of 'all' will process the full song
+    :param start -> int:  the starting measure. The default value of 1 starts from the first measure.
+    :return Tuple -> (list(Tuple), list(int)): where each element in the list(Tuple) is a Tuple of the form
+                    (measure_index, pitch_index, event_duration), and list(int) is a list of indices with legitimate
+                    pitches i.e. ignoring the index positions of rests.
+    """
     mel=dict["melody"]
     dur=dict["durations"]
     meas_dat = dict["beat_onset"]
@@ -486,8 +510,6 @@ def GetEuclideanData(dict, n, start=1):
         if iter < 99999:
             if not (mel[iter] < 99999):
                 add = False
-
-
         if iter < 99999 and add:
             final.append(( meas[iter], mel[iter], dur[iter]))
             indices.append(iter)
@@ -498,6 +520,15 @@ def GetEuclideanData(dict, n, start=1):
 
 
 def GetNMeasures(dict, n, start=1):
+    """
+    returns the melody of the composition :paran dict, :param n measures beginning at :param start - 1
+    :param dict -> Dictionary: the parsed composition
+    :param n -> int/string: number of full measures to be parsed. The value of 'all' will process the full song
+    :param start -> int:  the starting measure. The default value of 1 starts from the first measure.
+    :return Tuple -> (list(int), list(int)): where each element in the first list(int) is a pitch index,
+                    and list(int) is a list of indices with legitimate pitches i.e. ignoring
+                    the index positions of rests.
+    """
     mel = dict["melody"]
     final = []
     indices = []

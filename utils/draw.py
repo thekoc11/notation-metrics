@@ -145,12 +145,17 @@ def draw_causal_inference(dist_matrix, data_labels=labels, mela="Mayamalavagowla
     Returns a GraphViz code for drawing a directed acyclic graph, without edge weights. This graph portrays the
     Causal Inference being sent from the dist_matrix
     :param dist_matrix: Distance matrix used for specifying the edges of the graph
-    :param data_labels: The node names in the graph
+    :param data_labels: The node names in the graph. This parameter represents the main labels (i.e. of the format
+                        <song_name(raga_name)>)
     :param mela: Name of the Melakarta raga
     :param janya: Name of the Janya raga
-    :param alt_labels:
-    :return:
+    :param alt_labels: Alternate labels for nodes to be rendered in the final graph. When this param is not 'None',
+                       the labels specified here will be displayed. This is sometimes useful, e.g. when we want to
+                       represent songs as numbers to make the final DAGs a bit more squared.
+    :return: no return value, however, prints GraphViz code for the required DAG, which can be verified at
+             https://dreampuf.github.io/GraphvizOnline
     """
+    # TODO: Add a try-catch logic here, so that the function returns 'True' if the DAG was successfully built, and prints the error otherwise
     G = pgv.AGraph(directed=True, strict=False, rankdir="TD")
     graph_labels = []
     if janya is not None:

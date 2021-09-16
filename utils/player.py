@@ -96,14 +96,14 @@ class Player():
 
 
 
-if __name__ == '__main__':
-    # print(get_freq_after_x_semitones(0))
-    x = np.arange(default_length * 12)
-    data = np.zeros(x.shape, dtype='float64')
-    for i in range(len(x)):
-        begin = x[i] // default_length * default_length
-        data[i] = np.sin(2 * np.pi * get_freq_after_x_semitones(x[i] / default_length) * x[i] / F_s)
-        print(x[i]/default_length)
-
-    scaled = np.int16(data/np.max(np.abs(data)) * 32767)
-    write('test.wav', 44100, scaled)
+# if __name__ == '__main__':
+#     # print(get_freq_after_x_semitones(0))
+#     x = np.arange(default_length * 12)
+#     data = np.zeros(x.shape, dtype='float64')
+#     for i in range(len(x)):
+#         begin = x[i] // default_length * default_length
+#         data[i] = np.sin(2 * np.pi * get_freq_after_x_semitones(x[i] / default_length) * x[i] / F_s)
+#         print(x[i]/default_length)
+#
+#     scaled = np.int16(data/np.max(np.abs(data)) * 32767)
+#     write('test.wav', 44100, scaled)
