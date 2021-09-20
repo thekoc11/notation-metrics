@@ -172,8 +172,8 @@ def GetAdjustedMelodies(d, normalise_length=True, pre_min_len=None):
     if normalise_length:
         list_lens = [len(i) for i in list(ret_dict.values())]
         min_len = np.min(list_lens) if pre_min_len is None else pre_min_len
-        if pre_min_len > min_len:
-            return ValueError("predefined minimum should be <= the minimum length composition of the set")
+        # if pre_min_len > min_len:
+        #     return ValueError("predefined minimum should be <= the minimum length composition of the set")
         indices = [np.random.randint(0, i - min_len + 1, 1)[0] for i in list_lens]
         for i, (key, val) in enumerate(ret_dict.items()):
             ret_dict[key] = ret_dict[key][indices[i]:indices[i] + min_len]
@@ -287,15 +287,15 @@ def StandardisingRepeater(song_coords, stan_size=1500):
 
 
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
     #
-    # dicts3d = GetRagaSongCoordsConcat('15', '15_m')
-    # for key in dicts3d:
-    #     print(key)
+    dicts3d = GetRagaSongCoordsConcat('29')
+    for key in dicts3d:
+        print(key)
     # for key in dicts3d:
     #     dicts3d[key] = dataStructures.PackTuples(*dicts3d[key])
     # coords = GetAdjMelDictsConcat('15', '15_m')
-    # d = GetAdjustedMelodies(dicts3d)
+    d = GetAdjustedMelodies(dicts3d)
 
     # print(adjMelDicts.keys())
     # coords = GetRagaSongCoords('22')
