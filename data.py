@@ -421,6 +421,68 @@ MOZART_VARIATION7["beat_onset"] = [1, 0, 0, 0, 0, 0, 0,
                                   1, 0, 0, 0, 0, 0, 0, 0,
                                   1, 0]
 
+Quick_March = {"beat_onset": [], "melody": [], "durations": [], 'rests': []}
+
+Quick_March["melody"] = [7, 12, 12, 11, 12,
+                        16, 12, 16, 12,
+                        7, 12, 16, 12,
+                        16, 14, 14, 14, 7,
+                        7, 12, 12, 11, 12,
+                        16, 12, 16, 12,
+                        7, 12, 16, 12,
+                        14, 12, 12, 12]
+Quick_March["durations"] = [0.25, 0.125, 0.125, 0.125, 0.125,
+                        0.25, 0.125, 0.25, 0.125,
+                        0.25, 0.125, 0.25, 0.125,
+                        0.125, 0.125, 0.125, 0.25, 0.125,
+                        0.25, 0.125, 0.125, 0.125, 0.125,
+                        0.25, 0.125, 0.25, 0.125,
+                        0.25, 0.125, 0.25, 0.125,
+                        0.125, 0.125, 0.125, 0.375]
+
+Quick_March["Measure"] = [0, 0, 0, 0, 0,
+                          1,1,1,1,
+                          2, 2, 2, 2,
+                          3, 3, 3, 3, 3,
+                          4, 4, 4, 4, 4,
+                          5, 5, 5, 5,
+                          6, 6, 6, 6,
+                          7, 7, 7, 7]
+
+Quick_March[" Duration"] = [i / 0.75 for i in Quick_March["Measure"]]
+
+British_Grenadaire = {"Measure": [], " Note": [], " Duration": []}
+
+British_Grenadaire[" Note"] = [12, 7, 12, 14,
+                               17, 16, 14, 16,
+                               17, 16, 14, 12,
+                               14, 14, 14, 14, 7,
+                               12, 7, 12, 14,
+                               16, 14, 16, 17,
+                               19, 12, 16, 14, 12, 11,
+                               12]
+
+British_Grenadaire[" Duration"] = [3/16, 1/16, 1/8, 1/8,
+                               3/16, 1/16, 1/8, 1/8,
+                               3/16, 1/16, 1/8, 1/8,
+                               1/8, 1/16, 1/16, 1/8, 1/8,
+                               3/16, 1/16, 1/8, 1/8,
+                               1/4, 1/8, 1/16, 1/16,
+                               1/8, 1/8, 1/16, 1/16, 1/16, 1/16,
+                               1/2]
+
+British_Grenadaire["Measure"] = [0, 0, 0, 0,
+                               1, 1, 1, 1,
+                               2, 2, 2, 2,
+                               3, 3, 3, 3, 3,
+                               4, 4, 4, 4,
+                               5, 5, 5, 5,
+                               6, 6, 6, 6, 6, 6,
+                               7]
+
+British_Grenadaire[" Duration"] = [i* 2 for i in British_Grenadaire[" Duration"]]
+
+
 #### TODO: ALl the manually parsed compositions defined above should be encapsulated in a data class.
 #### The class may also cover the following methods as members
 
@@ -712,8 +774,10 @@ if __name__ == '__main__':
     # plt.show()
     # print(GetEuclideanData(AH_VOUS_ORIGINAL, 4, 1)[0])
     # print(xtractAxes(GetSongCoords2d(SYAMALE_MEENAKSHI)))
-    p = Player(SYAMALE_MEENAKSHI, "syamale")
-    p1 = Player(AH_VOUS_ORIGINAL, "ah_orig")
-    p2 = Player(MOZART_THEME, "ah_moz")
-    p3 = Player(MOZART_VARIATION5, "moz_5")
-    p4 = Player(GOOSEY_GOOSEY_GANDER, "goose")
+    # p = Player(SYAMALE_MEENAKSHI, "syamale")
+    # p1 = Player(AH_VOUS_ORIGINAL, "ah_orig")
+    # p2 = Player(MOZART_THEME, "ah_moz")
+    # p3 = Player(MOZART_VARIATION5, "moz_5")
+    # p4 = Player(GOOSEY_GOOSEY_GANDER, "goose")
+    p5 = Player(label='british_grenadire', note_len=44100)
+    p5.compute_variables(Quick_March)

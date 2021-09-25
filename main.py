@@ -42,14 +42,14 @@ def get_raga_event_list(dat):
 
 
 if __name__ == '__main__':
-    dat = dataset.GetRagaSongCoordsConcat('15')
+    dat = dataset.GetRagaSongCoordsConcat('29')
     iters = 0
     final_list = get_raga_event_list(dat)
 
     uni = dataStructures.NGramHolder(final_list.classes[1], 1)
     uni.CalculateFreq(final_list.mainArray[1])
 
-    d_surr1 = markovian.GenerateForRaga('15', num_comps=100, comp_length=1000, serial=True)
+    d_surr1 = markovian.GenerateForRaga('29', num_comps=100, comp_length=1000, serial=True)
 
     finl_surr = get_raga_event_list(d_surr1)
     uni_surr = dataStructures.NGramHolder(finl_surr.classes[1], 1)
@@ -71,25 +71,25 @@ if __name__ == '__main__':
         new_prob_surr = np.matmul(prob_surr, new_prob_surr)
         if i == nIters - 2:
             new_prob_last = new_prob
-    pi =  final_list.classFreq[2] / final_list.classFreqSum[2] # new_prob[-1] #
-    pi_surr = finl_surr.classFreq[2] / finl_surr.classFreqSum[2] # new_prob_surr[-1] #
+    pi =   new_prob[-1] # final_list.classFreq[2] / final_list.classFreqSum[2] #
+    pi_surr = new_prob_surr[-1] # finl_surr.classFreq[2] / finl_surr.classFreqSum[2] #
     print(pi)
     print(pi_surr)
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(1, 1, 1)
 
-    ax.plot(final_list.classes[2], pi, '-o', label='raga')
+    ax.plot( pi, '-o', label='raga')
     pi_surr_plot = []
     for i in range(len(final_list.classes[2])):
         if final_list.classes[2][i] not in finl_surr.classes[2]:
             pi_surr_plot.append(np.nan)
         else:
             pi_surr_plot.append(pi_surr[list(finl_surr.classes[2]).index(final_list.classes[2][i])])
-    ax.plot(finl_surr.classes[2], pi_surr, '-o', label='surrogate')
+    ax.plot( pi_surr, '-o', label='surrogate')
 
     # ax.plot(final_list.classes[2], pi_surr_plot, '-o', label="raga")
     # ax.plot(final_list.classes[2], pi, '-o', label="surrogate")
-    ax.legend()
+    # ax.legend()
     ax.yaxis.set_major_locator(MaxNLocator(3))
     ax.xaxis.set_major_locator(MaxNLocator(3))
     plt.xticks(fontsize=38)
